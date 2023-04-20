@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.glass {
+	z-index: 200;
+
+	background: linear-gradient(
+		180deg,
+		rgba(255, 255, 255, 0.4),
+		rgba(255, 255, 255, 0.08)
+	);
+	border: 1px solid #111111;
+	backdrop-filter: blur(20px);
+}
