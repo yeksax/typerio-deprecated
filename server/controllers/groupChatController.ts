@@ -14,6 +14,8 @@ interface GroupChatBody {
 
 groupChatController.post("/create", async (req: Request, res: Response) => {
 	let groupInfo: GroupChatBody = req.body;
+	console.log(groupInfo)
+	
 	const prisma = new PrismaClient();
 
 	const owner = await prisma.user.findUnique({
@@ -56,7 +58,7 @@ groupChatController.post("/create", async (req: Request, res: Response) => {
 		},
 	});
 
-	res.status(200).send("Group created");
+	res.send("Group created");
 });
 
 groupChatController.get("/", async (req: Request, res: Response) => {

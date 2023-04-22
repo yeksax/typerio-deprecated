@@ -3,7 +3,6 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import messageHandler from "./util/messageHandler";
 import { Message, User, PrismaClient } from "@prisma/client";
-import { log } from "console";
 import groupChatController from "./controllers/groupChatController";
 import userController from "./controllers/userController";
 
