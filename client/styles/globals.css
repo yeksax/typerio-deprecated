@@ -13,3 +13,16 @@
 	border: 1px solid #111111;
 	backdrop-filter: blur(20px);
 }
+
+html,
+body {
+	height: 100%;
+}
+
+.page {
+	height: 100vh;
+}
+
+*::-webkit-scrollbar {
+	display: none;
+}

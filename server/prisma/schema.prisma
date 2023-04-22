@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String      @id @default(uuid())
+  email           String      @unique
+  createdAt       DateTime    @default(now())
+  username        String
+  messages        Message[]
+  groupChats      GroupChat[]
+  ownedGroupChats GroupChat[] @relation("OwnedGroupChats")
+
+  @@index([email])
+}
+
+model GroupChat {
+  id           String    @id @default(cuid())
+  owner        User      @relation("OwnedGroupChats", fields: [ownerId], references: [id])
+  ownerId      String
+  name         String
+  description  String
+  thumbnail    String    @default("/group.png")
+  members      User[]
+  createdAt    DateTime  @default(now())
+  Message      Message[]
+}
+
+model Message {
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  content      String
+  author       User      @relation(fields: [authorId], references: [id])
+  groupChat    GroupChat @relation(fields: [groupChatId], references: [id])
+  pastVersions String[]
+  authorId     String
+  groupChatId  String
+
+  @@index([id, authorId])
+}

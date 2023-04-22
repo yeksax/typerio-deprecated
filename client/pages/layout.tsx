@@ -9,9 +9,9 @@ const sourceCode = Source_Code_Pro({ subsets: ['latin'] })
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <div className={`${sourceCode.className}`}>
+    <div className={`${sourceCode.className} flex flex-col page`}>
       <Header />
-      {children}  
+      <div className="pt-20 overflow-y-scroll">{children}</div>
     </div>
   )
 }
