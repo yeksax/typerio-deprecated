@@ -1,8 +1,15 @@
-import { useUser } from "@auth0/nextjs-auth0/client"
 import Link from "next/link"
+import { useSession, signOut } from "next-auth/react"
 
 export default function Header() {
-  const { user, error, isLoading } = useUser()
+  const { data: session } = useSession()
+
+  const linkCss = "hover:font-semibold transition-all"
+
+  function handleSignOut() {
+    //@ts-ignore
+    signOut({ redirect: "/" })
+  }
 
   return (
     <header className={` px-40 h-20 flex justify-between items-center border-b border-b-black fixed top-0 left-0 w-full glass`}>
@@ -10,14 +17,15 @@ export default function Header() {
         TYPER
       </Link>
       <nav className="flex gap-12">
-        <Link href="/explore">Explorar</Link>
-        <Link href="/wpm">WPM Runner</Link>
-        <Link href="/premium">Seja Premium</Link>
+        <Link className={linkCss} href="/explore">Explorar</Link>
+        {session && <>
+          <Link className={linkCss} href="/user/groups">Meus Grupos</Link>
+          <Link className={linkCss} href="/premium">Seja Premium</Link></>}
       </nav>
       <nav>
-        {user ?
-          <Link href="/api/auth/logout">Meu Perfil</Link> :
-          <Link href="/api/auth/login">Login</Link>
+        {session ?
+          <button className={linkCss} onClick={handleSignOut} >Meu Perfil</button> :
+          <Link className={linkCss} href="/login">Login</Link>
         }
 
       </nav>
