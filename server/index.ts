@@ -5,6 +5,7 @@ import messageHandler from "./util/messageHandler";
 import { Message, User, PrismaClient } from "@prisma/client";
 import groupChatController from "./controllers/groupChatController";
 import userController from "./controllers/userController";
+import { prisma } from "./lib/prisma";
 
 const cors = require("cors");
 
@@ -29,8 +30,6 @@ interface MessageEventData {
 
 app.use("/groups", groupChatController);
 app.use("/user", userController);
-
-const prisma = new PrismaClient();
 
 io.on("connection", (socket) => {
 	socket.on("message", async (msg: MessageEventData) => {

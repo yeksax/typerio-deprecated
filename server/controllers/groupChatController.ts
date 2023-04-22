@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import { GroupChat, Message, PrismaClient } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 
 const groupChatController = Router();
 
@@ -14,10 +15,8 @@ interface GroupChatBody {
 
 groupChatController.post("/create", async (req: Request, res: Response) => {
 	let groupInfo: GroupChatBody = req.body;
-	console.log(groupInfo)
+	console.log(groupInfo.ownerEmail)
 	
-	const prisma = new PrismaClient();
-
 	const owner = await prisma.user.findUnique({
 		where: { email: groupInfo.ownerEmail },
 		include: { ownedGroupChats: true, groupChats: true },
@@ -58,13 +57,13 @@ groupChatController.post("/create", async (req: Request, res: Response) => {
 		},
 	});
 
-	res.send("Group created");
+	res.send(groupChat);
 });
 
 groupChatController.get("/", async (req: Request, res: Response) => {
-	const prisma = new PrismaClient();
 	let groupChats: GroupChat[] = [];
 	let userEmail = req.query.user as string;
+	console.log(userEmail)
 
 	groupChats = await prisma.groupChat.findMany({
 		include: {
@@ -76,34 +75,39 @@ groupChatController.get("/", async (req: Request, res: Response) => {
 		},
 	});
 
-	let isIn: boolean;
+	let mappedGroupChats: any[] = groupChats;
 
-	const user = await prisma.user.findUnique({
-		where: {
-			email: userEmail,
-		},
-		include: { groupChats: true },
-	});
+	if(userEmail != 'undefined'){
+		mappedGroupChats = []
+		let isIn: boolean;
 
-	let mappedGroupChats: any[] = [];
-
-	groupChats.forEach((group) => {
-		let currentGroup;
-		let isIn = false;
-
-		let userGroups = user?.groupChats.map((group) => {
-			return group.id;
+		const user = await prisma.user.findUnique({
+			where: {
+				email: userEmail,
+			},
+			include: { groupChats: true },
 		});
-
-		isIn = userGroups?.includes(group.id) as boolean;
-
-		currentGroup = {
-			...group,
-			isIn: isIn,
-		};
-
-		mappedGroupChats.push(currentGroup);
-	});
+	
+	
+		groupChats.forEach((group) => {
+			let currentGroup;
+			let isIn = false;
+	
+			let userGroups = user?.groupChats.map((group) => {
+				return group.id;
+			});
+	
+			isIn = userGroups?.includes(group.id) as boolean;
+	
+			currentGroup = {
+				...group,
+				isIn: isIn,
+			};
+	
+			mappedGroupChats.push(currentGroup);
+		});
+	}
+	
 
 	await prisma.$disconnect();
 	res.send(mappedGroupChats);
