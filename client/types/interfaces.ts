@@ -6,6 +6,7 @@ interface groupChat {
 	thumbnail?: string;
 	createdAt?: Date;
 	isIn: boolean;
+	displayId: string;
 
 	_count?: {
 		members: Number;

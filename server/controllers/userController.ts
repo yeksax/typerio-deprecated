@@ -1,44 +1,24 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response, Router } from "express";
 import { prisma } from "../lib/prisma";
+import createUser from "../util/userCreate";
+import { getUserGroups } from "../util/userGetGroups";
 
 const userController = Router();
 
-userController.get("/", async (req: Request, res: Response) => {
-	res.send("userpage");
-});
-
-userController.get("/login", (req: Request, res: Response) => {
-	console.log("login");
-	res.sendStatus(200);
+userController.post("/create", async (req: Request, res: Response) => {
+	let user = req.body;
+	const response = await createUser(user);
+	res.send(response);
 });
 
 userController.get("/groups", async (req: Request, res: Response) => {
-	const email = req.query.email as string;
-
-	const user = await prisma.user.findUnique({
-		where: {
-			email: email,
-		},
-		include: {
-			groupChats: {
-				include: {
-					_count: {
-						select: {
-							members: true,
-						},
-					},
-				},
-			},
-		},
-	});
-
-	let groupChats = user?.groupChats.map((group) => {
-		return { ...group, isIn: true };
-	});
-
-	if (groupChats == undefined) groupChats = [];
-	res.send(groupChats);
+	const email = req.query.user as string;
+	let result = await getUserGroups({user: {
+		email: email
+	}});
+	
+	res.send(result);
 });
 
 export default userController;

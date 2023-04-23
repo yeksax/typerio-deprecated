@@ -12,7 +12,7 @@ export default function Header() {
   }
 
   return (
-    <header className={` px-40 h-20 flex justify-between items-center border-b border-b-black fixed top-0 left-0 w-full glass`}>
+    <header className={`px-6 md:px-40 h-20 flex justify-between items-center border-b border-b-black fixed top-0 left-0 w-full glass`}>
       <Link href='/' className="text-2xl upercase font-semibold">
         TYPER
       </Link>

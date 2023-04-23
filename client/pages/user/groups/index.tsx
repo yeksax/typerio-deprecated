@@ -1,5 +1,6 @@
 import CreateGroup from "@/components/groupCreate";
 import GroupsPreview from "@/components/groupsPreview";
+import TextSplitter from "@/components/textsplitter";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -14,7 +15,7 @@ export default function MyChats() {
 
   useEffect(() => {
     if (user != undefined) {
-      fetch(`http://localhost:3001/user/groups?email=${user.email}`, {
+      fetch(`http://localhost:3001/user/groups?user=${user.email}`, {
       }).then(async (r) => {
         setGroups(await r.json())
         console.log(groups)
@@ -28,8 +29,9 @@ export default function MyChats() {
 
   return <div className="flex flex-col pt-10">
     <div className="px-40">
-      <CreateGroup appendGroup={setGroups} currentGroups={groups}/>
+      <CreateGroup appendGroup={setGroups} currentGroups={groups} />
     </div>
+    {/* <TextSplitter text="Grupos em que você está" className="px-40"/> */}
     {/* <div className="w-full border-b border-b-black px-40"></div> */}
     <GroupsPreview groups={groups} />
   </div>

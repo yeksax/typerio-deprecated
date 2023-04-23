@@ -11,36 +11,38 @@ datasource db {
 }
 
 model User {
-  id              String      @id @default(uuid())
-  email           String      @unique
-  createdAt       DateTime    @default(now())
-  username        String
-  messages        Message[]
-  groupChats      GroupChat[]
-  ownedGroupChats GroupChat[] @relation("OwnedGroupChats")
+  id          String    @id @default(uuid())
+  email       String    @unique
+  createdAt   DateTime  @default(now())
+  username    String
+  messages    Message[]
+  groupChats  Group[]
+  ownedGroups Group[]   @relation("OwnedGroups")
 
   @@index([email])
 }
 
-model GroupChat {
-  id           String    @id @default(cuid())
-  owner        User      @relation("OwnedGroupChats", fields: [ownerId], references: [id])
-  ownerId      String
-  name         String
-  description  String
-  thumbnail    String    @default("/group.png")
-  members      User[]
-  createdAt    DateTime  @default(now())
-  Message      Message[]
+model Group {
+  id          String @id @default(cuid())
+  displayId   String @unique
+  owner       User   @relation("OwnedGroups", fields: [ownerId], references: [id])
+  ownerId     String
+  name        String
+  description String
+  thumbnail   String @default("/group.png")
+
+  members   User[]
+  createdAt DateTime  @default(now())
+  Message   Message[]
 }
 
 model Message {
-  id           Int       @id @default(autoincrement())
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   content      String
-  author       User      @relation(fields: [authorId], references: [id])
-  groupChat    GroupChat @relation(fields: [groupChatId], references: [id])
+  author       User     @relation(fields: [authorId], references: [id])
+  groupChat    Group    @relation(fields: [groupChatId], references: [id])
   pastVersions String[]
   authorId     String
   groupChatId  String

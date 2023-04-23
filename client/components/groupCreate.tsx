@@ -18,7 +18,7 @@ export default function CreateGroup({appendGroup, currentGroups}: {appendGroup: 
     if (!user) return
 
     let postData = {
-      ownerEmail: user.email,
+      owner: user.email,
       group: {
         ...data
       },

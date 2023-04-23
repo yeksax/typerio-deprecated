@@ -20,7 +20,7 @@ export default function GroupPreview({ group }: GroupProps) {
           <p className="truncate">{group.description}</p>
         </div>
         {isLoggedIn && <Link
-          href={`/groups/${group.id}`}
+          href={`/groups/${group.displayId}`}
           className="border-black w-fit border-2 box-border text-black px-4 py-1 rounded text-xs font-semibold">
           {group.isIn ? "Continuar" : "Entrar"}
         </Link>}
