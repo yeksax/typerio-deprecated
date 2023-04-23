@@ -18,9 +18,9 @@ export default function MyChats() {
       fetch(`http://localhost:3001/user/groups?user=${user.email}`, {
       }).then(async (r) => {
         setGroups(await r.json())
-        console.log(groups)
+        // console.log(groups)
       }).catch((e) => {
-        console.log(e)
+        // console.log(e)
       }
       )
     }

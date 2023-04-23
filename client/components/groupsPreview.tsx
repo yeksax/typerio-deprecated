@@ -7,7 +7,6 @@ interface GroupsProps {
 }
 
 export default function GroupsPreview({ groups }: GroupsProps) {
-  console.log(groups)
   let toBeDisplayed: ReactElement | ReactElement[] = <GroupSkeleton count={7} />;
 
   if (groups) toBeDisplayed = groups.map((group) => {

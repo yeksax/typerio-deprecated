@@ -1,17 +1,20 @@
 import { prisma } from "../lib/prisma";
 import axios from "axios";
 import { appendGroupToUser } from "./userJoinGroup";
+import { Request } from "express";
+
+import path from "path";
+import fs from "fs";
 
 interface CreateGroupBody {
 	owner: string;
-	group: {
-		name: string;
-		description: string;
-		thumbnail: string;
-	};
+	name: string;
+	description: string;
 }
 
-export async function createGroup(body: CreateGroupBody) {
+export async function createGroup(req: Request) {
+	const body: CreateGroupBody = await req.body;
+
 	const owner = await prisma.user.findUnique({
 		where: {
 			email: body.owner,
@@ -30,14 +33,38 @@ export async function createGroup(body: CreateGroupBody) {
 		).data;
 	};
 
-	const lowercase = body.group.name.toLowerCase().replace(/ /g, "-");
+	const lowercase = body.name.toLowerCase().replace(/ /g, "-");
 	let displayId = await `${lowercase}-${await getRandomWord()}`;
 
-	const group = await prisma.group.create({
+	let thumbnail = "/group.png";
+
+	// @ts-ignore
+	if (req.files != undefined) {
+		// @ts-ignore
+		let thumbnailFile = req.files.thumbnail;
+		let ext = thumbnailFile.name.split(".").pop();
+
+		thumbnail = `http://localhost:${process.env.PORT}/files/${displayId}/thumbnail.${ext}`;
+
+		let thumbnailPath = path.join(
+			process.cwd(),
+			"files",
+			displayId,
+			`thumbnail.${ext}`
+		);
+
+		fs.mkdir(`${process.cwd()}/files/${displayId}`, (e) => {
+			console.log(e);
+		});
+
+		thumbnailFile.mv(thumbnailPath);
+	}
+
+	let group = await prisma.group.create({
 		data: {
-			description: body.group.description,
-			name: body.group.name,
-			thumbnail: body.group.thumbnail,
+			description: body.description,
+			name: body.name,
+			thumbnail: thumbnail,
 			ownerId: owner.id,
 			displayId: displayId,
 			members: {
@@ -49,7 +76,6 @@ export async function createGroup(body: CreateGroupBody) {
 	});
 
 	let udpdatedUser = await appendGroupToUser(owner.email, displayId);
-	console.log(udpdatedUser)
 
-	return group;
+	return { ...group, _count: { members: 1 }, isIn: true };
 }
