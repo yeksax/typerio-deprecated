@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma";
 
-export async function appendGroupToUser(email: string, groupDisplayId: string) {
+export async function appendGroupToUser(email: string, groupId: string) {
 	const user = prisma.user.update({
 		where: {
 			email: email,
@@ -8,7 +8,7 @@ export async function appendGroupToUser(email: string, groupDisplayId: string) {
 		data: {
 			groupChats: {
 				connect: {
-					displayId: groupDisplayId,
+					id: groupId,
 				},
 			},
 		},

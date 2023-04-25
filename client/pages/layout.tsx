@@ -12,7 +12,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className={`${sourceCode.className} flex flex-col page`}>
       <Header />
-      <div className="pt-20 overflow-y-scroll">{children}</div>
+      <div className="pt-20 h-full overflow-y-scroll">{children}</div>
     </div>
   )
 }

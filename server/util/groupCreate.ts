@@ -34,7 +34,9 @@ export async function createGroup(req: Request) {
 	};
 
 	const lowercase = body.name.toLowerCase().replace(/ /g, "-");
-	let displayId = await `${lowercase}-${await getRandomWord()}`;
+	let id = await `${lowercase}-${await getRandomWord()}`;
+
+	id = id.replace(/[/?%*:|"<>.]/g, "");
 
 	let thumbnail = "/group.png";
 
@@ -44,16 +46,16 @@ export async function createGroup(req: Request) {
 		let thumbnailFile = req.files.thumbnail;
 		let ext = thumbnailFile.name.split(".").pop();
 
-		thumbnail = `http://localhost:${process.env.PORT}/files/${displayId}/thumbnail.${ext}`;
+		thumbnail = `http://localhost:${process.env.PORT}/files/${id}/thumbnail.${ext}`;
 
 		let thumbnailPath = path.join(
 			process.cwd(),
 			"files",
-			displayId,
+			id,
 			`thumbnail.${ext}`
 		);
 
-		fs.mkdir(`${process.cwd()}/files/${displayId}`, (e) => {
+		fs.mkdir(`${process.cwd()}/files/${id}`, (e) => {
 			console.log(e);
 		});
 
@@ -62,11 +64,11 @@ export async function createGroup(req: Request) {
 
 	let group = await prisma.group.create({
 		data: {
+			id: id,
 			description: body.description,
 			name: body.name,
 			thumbnail: thumbnail,
 			ownerId: owner.id,
-			displayId: displayId,
 			members: {
 				connect: {
 					id: owner.id,
@@ -75,7 +77,7 @@ export async function createGroup(req: Request) {
 		},
 	});
 
-	let udpdatedUser = await appendGroupToUser(owner.email, displayId);
+	let udpdatedUser = await appendGroupToUser(owner.email, id);
 
 	return { ...group, _count: { members: 1 }, isIn: true };
 }

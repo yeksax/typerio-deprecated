@@ -11,20 +11,20 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  email       String    @unique
-  createdAt   DateTime  @default(now())
-  username    String
-  messages    Message[]
-  groupChats  Group[]
-  ownedGroups Group[]   @relation("OwnedGroups")
+  id             String    @id @default(uuid())
+  email          String    @unique
+  profilePicture String    @default("/user.png")
+  createdAt      DateTime  @default(now())
+  username       String
+  messages       Message[]
+  groupChats     Group[]
+  ownedGroups    Group[]   @relation("OwnedGroups")
 
   @@index([email])
 }
 
 model Group {
-  id          String @id @default(cuid())
-  displayId   String @unique
+  id          String @id @unique
   owner       User   @relation("OwnedGroups", fields: [ownerId], references: [id])
   ownerId     String
   name        String

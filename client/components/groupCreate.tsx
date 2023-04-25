@@ -87,7 +87,7 @@ export default function CreateGroup({ appendGroup, currentGroups }: { appendGrou
         </div>
         <button
           type="submit"
-          className="border-black w-fit border-2 box-border text-black px-4 py-1 rounded text-xs font-semibold">
+          className="transition-all duration-100 hover:bg-black hover:text-white border-black w-fit border-2 box-border text-black px-4 py-1 rounded text-xs font-semibold">
           Criar
         </button>
       </div >

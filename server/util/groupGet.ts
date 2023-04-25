@@ -50,3 +50,18 @@ export async function getGroups({ user: { email } }: GetGroupsBody) {
 
 	return groups;
 }
+
+export async function getGroup(groupId: string) {
+	return await prisma.group.findUnique({
+		where: {
+			id: groupId,
+		},
+		include: {
+			_count: {
+				select: {
+					members: true,
+				},
+			},
+		},
+	});
+}

@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Input from "./input";
-import TextSplitter from "../../components/textsplitter";
+import TextSplitter from "../../../components/textsplitter";
 import { faGithub, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { getSession, signIn } from "next-auth/react";
 
@@ -22,7 +22,9 @@ export async function getServerSideProps({ req }: { req: any }) {
 }
 export default function Login() {
   function githubLogin() {
-    signIn('github')
+    signIn('github', {
+      callbackUrl: window.location.origin
+    })
   }
 
   function emailLogin() {
@@ -30,7 +32,9 @@ export default function Login() {
   }
 
   function googleLogin() {
-    signIn('google')
+    signIn('google', {
+      callbackUrl: window.location.origin
+    })
   }
 
   return (

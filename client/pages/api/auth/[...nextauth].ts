@@ -6,7 +6,7 @@ require("dotenv").config();
 
 export const authOptions = {
 	pages: {
-		signIn: "/login"
+		signIn: "/auth/signin"
 	},
 	// Configure one or more authentication providers
 	providers: [
