@@ -1,13 +1,14 @@
 import { clientTRPC } from "@/service/trpc";
-import { Group } from "@/types/interfaces";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { useRouter } from 'next/router'
 
 export default function CreateGroup({ appendGroup, currentGroups }: { appendGroup: any, currentGroups: any }) {
   const imageRef = useRef(null)
   const imageInputRef = useRef(null)
   const user = useSession().data?.user
+  const router = useRouter()
 
   const [thumbnail, setThumbnail] = useState("https://source.unsplash.com/random/?paper")
 
@@ -53,6 +54,7 @@ export default function CreateGroup({ appendGroup, currentGroups }: { appendGrou
     })
 
     appendGroup([group, ...currentGroups])
+    router.push(`/group/${group.id}`)
   }
 
 
