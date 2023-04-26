@@ -1,13 +1,13 @@
 import { prisma } from "../lib/prisma";
 
 interface User {
-	id: string;
+	id?: string;
 	name: string;
 	email: string;
-	image: string;
+	image?: string;
 }
 
-export default async function createUser({ name, email, image }: User) {
+export async function createUser({ name, email }: User) {
 	try {
 		const user = await prisma.user.create({
 			data: {

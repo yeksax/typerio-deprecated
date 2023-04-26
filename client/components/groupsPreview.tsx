@@ -1,6 +1,7 @@
 import { ReactElement } from "react";
 import GroupPreview from "./groupPreview"
 import GroupSkeleton from "./groupSkeleton"
+import { Group } from "@/types/interfaces";
 
 interface GroupsProps {
   groups?: Group[] | undefined

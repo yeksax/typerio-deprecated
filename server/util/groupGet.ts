@@ -1,17 +1,11 @@
 import { Group } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 
-interface GetGroupsBody {
-	user: {
-		email: string | undefined;
-	};
-}
-
 interface GroupResponse extends Group {
 	isIn?: boolean;
 }
 
-export async function getGroups({ user: { email } }: GetGroupsBody) {
+export async function getGroups(email: string) {
 	let groups: GroupResponse[] = [];
 	let userGroups: Group["id"][] | undefined | null = [];
 

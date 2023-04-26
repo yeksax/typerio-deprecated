@@ -1,7 +1,7 @@
 import { prisma } from "../lib/prisma";
 
 export async function appendGroupToUser(email: string, groupId: string) {
-	const user = prisma.user.update({
+	const user = await prisma.user.update({
 		where: {
 			email: email,
 		},
@@ -17,5 +17,5 @@ export async function appendGroupToUser(email: string, groupId: string) {
 		},
 	});
 
-	return user;
+	return groupId;
 }

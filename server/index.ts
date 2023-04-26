@@ -1,10 +1,13 @@
 import express, { Request, Response } from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import userController from "./controllers/userController";
-import groupController from "./controllers/groupController";
-import path from "path";
+import { inferAsyncReturnType, initTRPC } from "@trpc/server";
+import * as trpcExpress from "@trpc/server/adapters/express";
 import { prisma } from "./lib/prisma";
+
+import { appRouter } from "./routes/_app";
+import { createContext } from "./trpc";
+import groupController from "./controllers/groupController";
 
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
@@ -21,6 +24,16 @@ app.use(fileUpload());
 app.use(express.json());
 app.use(cors());
 
+app.use(
+	"/trpc",
+	trpcExpress.createExpressMiddleware({
+		router: appRouter,
+		createContext,
+	})
+);
+
+app.use("/groups", groupController);
+
 app.get("/files/:uid/*", function (req: Request, res: Response) {
 	if (req.params) {
 		var uid = req.params.uid,
@@ -28,9 +41,6 @@ app.get("/files/:uid/*", function (req: Request, res: Response) {
 		res.sendFile(path, { root: `./files/${uid}/` });
 	}
 });
-
-app.use("/groups", groupController);
-app.use("/user", userController);
 
 io.on("connection", (socket) => {
 	let room = "";
@@ -42,7 +52,6 @@ io.on("connection", (socket) => {
 	socket.on("join", (group) => {
 		room = group;
 		socket.join(room);
-		console.log(socket.rooms);
 	});
 
 	socket.on("message", async (data) => {

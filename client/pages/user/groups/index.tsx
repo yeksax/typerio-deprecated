@@ -1,31 +1,34 @@
 import CreateGroup from "@/components/groupCreate";
 import GroupsPreview from "@/components/groupsPreview";
 import TextSplitter from "@/components/textsplitter";
-import { useSession } from "next-auth/react";
+import { clientTRPC } from "@/service/trpc";
+import { Group } from "@/types/interfaces";
+import { getSession, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { GetServerSidePropsContext } from "next";
 
-export default function MyChats() {
+interface MyChatsProps {
+  myGroups: Group[]
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getSession(context)
+
+  const myGroups = await clientTRPC.user.getGroups.query(session?.user?.email as string)
+
+  return {
+    props: {
+      myGroups
+    },
+  };
+}
+
+export default function MyChats({ myGroups }: MyChatsProps) {
   const user = useSession({
     required: true,
   }).data?.user;
 
-  const [groups, setGroups] = useState<groupChat[] | undefined>(undefined)
-
-  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-  useEffect(() => {
-    if (user != undefined) {
-      fetch(`http://localhost:3001/user/groups?user=${user.email}`, {
-      }).then(async (r) => {
-        setGroups(await r.json())
-        // console.log(groups)
-      }).catch((e) => {
-        // console.log(e)
-      }
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user])
+  const [groups, setGroups] = useState<Group[] | undefined>(myGroups)
 
   return <div className="flex flex-col pt-10">
     <div className="px-40">

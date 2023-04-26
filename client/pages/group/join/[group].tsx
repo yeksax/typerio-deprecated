@@ -1,12 +1,14 @@
+import { clientTRPC } from "@/service/trpc";
+import { Group } from "@/types/interfaces";
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
+//@ts-ignore
 export const getServerSideProps: GetServerSideProps<{ data: Group }> = async (context: GetServerSidePropsContext) => {
-  const res = await fetch(`http://localhost:3001/groups/${context.query.group}`)
-  const data: Group = await res.json()
+  const data = await clientTRPC.groups.getGroup.query(context.query.group as string)
 
   return {
     props: {
@@ -21,24 +23,12 @@ function Page({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) 
   const [isJoining, setIsJoining] = useState(false)
 
 
-  function joinGroup() {
-    let res;
+  async function joinGroup() {
     setIsJoining(true)
-    fetch(`http://localhost:3001/groups/${data.id}/join`, {
-      method: 'POST',
-      body: JSON.stringify({
-        user: session?.user?.email,
-        group: data.id
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then(r => {
-      if (r.status == 200) {
-        router.push(`/group/${data.id}`)
-      }
-    })
+    let res = await clientTRPC.groups.joinGroup.mutate({ group: data.id, user: session?.user?.email as string })
+    router.push(`/group/${res}`)
   }
+
 
   // will resolve data to type Data
   return (

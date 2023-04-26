@@ -1,23 +1,32 @@
 import { useEffect, useState } from "react"
 import GroupsPreview from "@/components/groupsPreview"
-import { useSession } from "next-auth/react"
+import { getSession, useSession } from "next-auth/react"
+import { clientTRPC } from "@/service/trpc";
+import { Group } from "@/types/interfaces";
+import { GetServerSidePropsContext } from "next";
 
-export default function Explore() {
-  const [groups, setGroups] = useState<Group[] | undefined>(undefined)
+
+interface ExploreProps {
+  groupsExplore: Group[];
+}
+export default function Explore({ groupsExplore }: ExploreProps) {
+  const [groups, setGroups] = useState<Group[] | undefined>(groupsExplore)
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const user = useSession().data?.user || undefined
 
   console.log(user?.email)
 
-  useEffect(() => {
-    fetch(`http://localhost:3001/groups?user=${user?.email}`).then(async (r) => {
-      // await sleep(1000)
-      setGroups(await r.json())
-    }).catch((e) => {
-      console.log(e)
-    }
-    )
-  }, [user])
-
   return <GroupsPreview groups={groups} />
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getSession(context)
+
+  const groupsExplore: any[] = await clientTRPC.groups.getGroups.query(session?.user?.email as string)
+
+  return {
+    props: {
+      groupsExplore
+    }
+  }
 }

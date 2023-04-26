@@ -7,12 +7,8 @@ import MessageInput from "./messageInput";
 import { socket } from "@/service/socket";
 
 import { GetServerSideProps, GetServerSidePropsContext } from "next/types";
-
-interface User {
-  username: string;
-  profilePicture: string;
-  isMe: boolean
-}
+import { clientTRPC } from "@/service/trpc";
+import { Group, Message, User } from "@/types/interfaces";
 
 interface Props {
   users: User[],
@@ -64,20 +60,24 @@ export default function Page({ users, groupData, messagesFromDB }: Props) {
   </section>
 }
 
+//@ts-ignore
 export const getServerSideProps: GetServerSideProps<Props> = async function getServerSideProps(context: GetServerSidePropsContext) {
   // Fetch data from external API
   const session = await getSession(context)
 
   const group = context.query.group as string
 
-  const userRes = await fetch(`http://localhost:3001/groups/${group}/members?user=${session?.user?.email}`)
-  const users = await userRes.json()
+  const groupData = await clientTRPC.groups.getGroup.query(group)
 
-  const groupRes = await fetch(`http://localhost:3001/groups/${group}`)
-  const groupData = await groupRes.json()
+  const users = await clientTRPC.groups.getMembers.query({
+    group: group,
+    email: session?.user?.email as string
+  })
 
-  const messagesRes = await fetch(`http://localhost:3001/groups/${group}/messages?user=${session?.user?.email}`)
-  const messagesFromDB = await messagesRes.json()
+  const messagesFromDB = await clientTRPC.groups.getMessages.query({
+    group: group,
+    email: session?.user?.email as string
+  })
 
   // Pass data to the page via props
   return { props: { users, groupData, messagesFromDB } }

@@ -1,3 +1,4 @@
+import { clientTRPC } from "@/service/trpc";
 import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
@@ -5,7 +6,7 @@ import { SignInOptions } from "next-auth/react";
 
 export const authOptions = {
 	pages: {
-		signIn: "/auth/signin"
+		signIn: "/auth/signin",
 	},
 	// Configure one or more authentication providers
 	providers: [
@@ -19,19 +20,11 @@ export const authOptions = {
 		}),
 	],
 	callbacks: {
-		async signIn({
-			user,
-		}: SignInOptions) {
+		async signIn({ user }: SignInOptions) {
 			const isAllowedToSignIn = true;
 			if (isAllowedToSignIn) {
-				await fetch("http://localhost:3001/user/create", {
-					method: "POST",
-					body: JSON.stringify(user),
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
-
+				// @ts-ignore
+				await clientTRPC.user.create.mutate(user);
 				return true;
 			} else {
 				// Return false to display a default error message

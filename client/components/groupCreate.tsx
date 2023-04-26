@@ -37,7 +37,7 @@ export default function CreateGroup({ appendGroup, currentGroups }: { appendGrou
     xhttp.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
         // Typical action to be performed when the document is ready:
-        appendGroup([...currentGroups, JSON.parse(this.response)])
+        appendGroup([JSON.parse(this.response), ...currentGroups])
       }
     };
     xhttp.open("POST", "http://localhost:3001/groups/create", true);
