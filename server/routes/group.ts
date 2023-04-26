@@ -6,8 +6,33 @@ import { getGroupMessages } from "../util/groupGetMessages";
 import { getGroupMembers } from "../util/groupGetMembers";
 import { createGroup } from "../util/groupCreate";
 import { appendGroupToUser } from "../util/userJoinGroup";
+import { setThumbnail } from "../util/setThumbnail";
 
 export const groupRouter = router({
+	create: publicProcedure
+		.input(
+			z.object({
+				owner: z.string(),
+				name: z.string(),
+				description: z.string(),
+			})
+		)
+		.mutation(async (req) => {
+			const group = await createGroup(req.input);
+			return group;
+		}),
+
+	setGroupImage: publicProcedure
+		.input(z.object({ group: z.string(), image: z.string() }))
+		.mutation(async (req) => {
+			const group = await setThumbnail({
+				id: req.input.group,
+				thumbnail: req.input.image,
+			});
+
+			return group.thumbnail;
+		}),
+
 	getGroups: publicProcedure.input(z.string()).query(async (req) => {
 		let groups = await getGroups(req.input);
 		return groups;
@@ -35,8 +60,11 @@ export const groupRouter = router({
 	joinGroup: publicProcedure
 		.input(z.object({ group: z.string(), user: z.string() }))
 		.mutation(async (req) => {
-			let group = await appendGroupToUser(req.input.user, req.input.group);
-			console.log(group)
+			let group = await appendGroupToUser(
+				req.input.user,
+				req.input.group
+			);
+			console.log(group);
 			return group;
 		}),
 });

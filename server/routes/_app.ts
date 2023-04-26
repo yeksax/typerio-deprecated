@@ -1,5 +1,4 @@
 import { router } from "../trpc";
-import { z } from "zod";
 
 import { groupRouter } from "./group";
 import { userRouter } from "./user";

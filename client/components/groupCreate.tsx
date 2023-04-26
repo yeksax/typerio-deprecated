@@ -1,3 +1,5 @@
+import { clientTRPC } from "@/service/trpc";
+import { Group } from "@/types/interfaces";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRef, useState } from "react";
@@ -28,21 +30,32 @@ export default function CreateGroup({ appendGroup, currentGroups }: { appendGrou
       setThumbnail(e.target?.result as string)
     };
     reader.readAsDataURL(file);
+
   }
 
-  function handleSubmit(e: any) {
+  async function handleSubmit(e: any) {
     e.preventDefault()
 
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-      if (this.readyState == 4 && this.status == 200) {
-        // Typical action to be performed when the document is ready:
-        appendGroup([JSON.parse(this.response), ...currentGroups])
-      }
-    };
-    xhttp.open("POST", "http://localhost:3001/groups/create", true);
-    xhttp.send(new FormData(e.target));
+    const name = e.target.name.value
+    const description = e.target.description.value
+    const owner = e.target.owner.value
+
+    let group = await clientTRPC.groups.create.mutate({
+      name: name,
+      description: description,
+      owner: owner,
+    })
+
+    group.thumbnail = await clientTRPC.groups.setGroupImage.mutate({
+      // group: group.id,
+      group: group.id,
+      image: thumbnail
+    })
+
+    appendGroup([group, ...currentGroups])
   }
+
+
 
   function inputFile() {
     //@ts-expect-error

@@ -5,8 +5,9 @@ import type {
 } from "../../server/lib/prisma";
 
 export interface Group extends group {
-	messages: Message[];
-	members: User[];
+	messages?: Message[];
+	members?: User[];
+	isIn?: boolean;
 
 	_count?: {
 		members: Number;

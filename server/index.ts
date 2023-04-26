@@ -7,7 +7,8 @@ import { prisma } from "./lib/prisma";
 
 import { appRouter } from "./routes/_app";
 import { createContext } from "./trpc";
-import groupController from "./controllers/groupController";
+import bodyParser from "body-parser";
+// import groupController from "./controllers/groupController";
 
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
@@ -20,6 +21,7 @@ const io = new Server(httpServer, {
 	},
 });
 
+app.use(bodyParser({limit: '24mb'}));
 app.use(fileUpload());
 app.use(express.json());
 app.use(cors());
@@ -32,7 +34,7 @@ app.use(
 	})
 );
 
-app.use("/groups", groupController);
+// app.use("/groups", groupController);
 
 app.get("/files/:uid/*", function (req: Request, res: Response) {
 	if (req.params) {

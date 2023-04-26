@@ -1,10 +1,6 @@
 import { prisma } from "../lib/prisma";
-import axios from "axios";
 import { appendGroupToUser } from "./userJoinGroup";
-import { Request } from "express";
-
-import path from "path";
-import fs from "fs";
+import axios from "axios";
 
 interface CreateGroupBody {
 	owner: string;
@@ -12,10 +8,8 @@ interface CreateGroupBody {
 	description: string;
 }
 
-export async function createGroup(req: Request) {
-	const body: CreateGroupBody = await req.body;
-
-	const owner = await prisma.user.findUnique({
+export async function createGroup(body: CreateGroupBody) {
+	const owner = (await prisma.user.findUnique({
 		where: {
 			email: body.owner,
 		},
@@ -23,9 +17,7 @@ export async function createGroup(req: Request) {
 			id: true,
 			email: true,
 		},
-	});
-
-	if (!owner) return "owner not found";
+	})) as any;
 
 	const getRandomWord = async () => {
 		return await (
@@ -38,36 +30,11 @@ export async function createGroup(req: Request) {
 
 	id = id.replace(/[/?%*:|"<>.;,+$#&^!@¨~\\°=(){}[\]]/g, "");
 
-	let thumbnail = "/group.png";
-
-	// @ts-ignore
-	if (req.files != undefined) {
-		// @ts-ignore
-		let thumbnailFile = req.files.thumbnail;
-		let ext = thumbnailFile.name.split(".").pop();
-
-		thumbnail = `http://localhost:${process.env.PORT}/files/${id}/thumbnail.${ext}`;
-
-		let thumbnailPath = path.join(
-			process.cwd(),
-			"files",
-			id,
-			`thumbnail.${ext}`
-		);
-
-		fs.mkdir(`${process.cwd()}/files/${id}`, (e) => {
-			console.log(e);
-		});
-
-		thumbnailFile.mv(thumbnailPath);
-	}
-
 	let group = await prisma.group.create({
 		data: {
 			id: id,
 			description: body.description,
 			name: body.name,
-			thumbnail: thumbnail,
 			ownerId: owner.id,
 			members: {
 				connect: {

@@ -1,6 +1,5 @@
 import CreateGroup from "@/components/groupCreate";
 import GroupsPreview from "@/components/groupsPreview";
-import TextSplitter from "@/components/textsplitter";
 import { clientTRPC } from "@/service/trpc";
 import { Group } from "@/types/interfaces";
 import { getSession, useSession } from "next-auth/react";
