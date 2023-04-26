@@ -3,7 +3,7 @@ import GroupPreview from "./groupPreview"
 import GroupSkeleton from "./groupSkeleton"
 
 interface GroupsProps {
-  groups?: groupChat[] | undefined
+  groups?: Group[] | undefined
 }
 
 export default function GroupsPreview({ groups }: GroupsProps) {

@@ -4,19 +4,6 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-
-interface Group {
-  id: string,
-  ownerId: string,
-  name: string,
-  description: string,
-  thumbnail: string,
-  createdAt: Date,
-  _count: {
-    members: number
-  }
-}
-
 export const getServerSideProps: GetServerSideProps<{ data: Group }> = async (context: GetServerSidePropsContext) => {
   const res = await fetch(`http://localhost:3001/groups/${context.query.group}`)
   const data: Group = await res.json()

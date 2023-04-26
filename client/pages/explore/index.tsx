@@ -3,7 +3,7 @@ import GroupsPreview from "@/components/groupsPreview"
 import { useSession } from "next-auth/react"
 
 export default function Explore() {
-  const [groups, setGroups] = useState<groupChat[] | undefined>(undefined)
+  const [groups, setGroups] = useState<Group[] | undefined>(undefined)
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const user = useSession().data?.user || undefined
 

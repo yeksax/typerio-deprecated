@@ -3,6 +3,7 @@ import { getGroup, getGroups } from "../util/groupGet";
 import { createGroup } from "../util/groupCreate";
 import { appendGroupToUser } from "../util/userJoinGroup";
 import { getGroupMembers } from "../util/groupGetMembers";
+import { getGroupMessages } from "../util/groupGetMessages";
 
 const groupController = Router();
 
@@ -50,9 +51,15 @@ groupController.get("/:group", async (req: Request, res: Response) => {
 });
 
 groupController.get("/:group/members", async (req: Request, res: Response) => {
-	let group = await getGroupMembers(req.params.group);
+	let members = await getGroupMembers(req.params.group, req.query.user as string);
+	
+	res.send(members);
+});
 
-	res.send(group);
+groupController.get("/:group/messages", async (req: Request, res: Response) => {
+	let messages = await getGroupMessages(req.params.group, req.query.user as string);
+
+	res.send(messages);
 });
 
 export default groupController;

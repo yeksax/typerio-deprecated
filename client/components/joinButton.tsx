@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 interface JoinProps {
-  group: groupChat,
+  group: Group,
 }
 
 export default function JoinButton({ group }: JoinProps) {

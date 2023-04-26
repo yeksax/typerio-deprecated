@@ -36,7 +36,7 @@ export async function createGroup(req: Request) {
 	const lowercase = body.name.toLowerCase().replace(/ /g, "-");
 	let id = await `${lowercase}-${await getRandomWord()}`;
 
-	id = id.replace(/[/?%*:|"<>.]/g, "");
+	id = id.replace(/[/?%*:|"<>.;,+$#&^!@¨~\\°=(){}[\]]/g, "");
 
 	let thumbnail = "/group.png";
 

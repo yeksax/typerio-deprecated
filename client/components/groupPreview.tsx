@@ -6,12 +6,10 @@ import { useSession } from "next-auth/react";
 import JoinButton from "./joinButton";
 
 interface GroupProps {
-  group: groupChat
+  group: Group
 }
 
 export default function GroupPreview({ group }: GroupProps) {
-  const isLoggedIn = useSession().data?.user != undefined;
-
   return (
     <div className="flex gap-4 justify-between last:pb-10">
       <Image className="h-24 w-24 object-cover aspect-square rounded border-black border-2" src={group.thumbnail || '/group.png'} alt={`${name} thumbnail`} width={100} height={100} />

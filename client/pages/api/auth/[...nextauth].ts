@@ -2,7 +2,6 @@ import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import { SignInOptions } from "next-auth/react";
-require("dotenv").config();
 
 export const authOptions = {
 	pages: {

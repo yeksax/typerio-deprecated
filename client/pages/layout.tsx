@@ -6,7 +6,7 @@ interface LayoutProps {
   children: ReactElement
 }
 
-const sourceCode = Source_Code_Pro({ subsets: ['latin'] })
+const sourceCode = Source_Code_Pro({ subsets: ['latin'], weight: ["200","300","400","500","600","700","800","900"] })
 
 export default function Layout({ children }: LayoutProps) {
   return (

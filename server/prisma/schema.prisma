@@ -33,7 +33,7 @@ model Group {
 
   members   User[]
   createdAt DateTime  @default(now())
-  Message   Message[]
+  messages  Message[]
 }
 
 model Message {

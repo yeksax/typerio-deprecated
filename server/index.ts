@@ -4,6 +4,7 @@ import { Server } from "socket.io";
 import userController from "./controllers/userController";
 import groupController from "./controllers/groupController";
 import path from "path";
+import { prisma } from "./lib/prisma";
 
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
@@ -32,8 +33,48 @@ app.use("/groups", groupController);
 app.use("/user", userController);
 
 io.on("connection", (socket) => {
+	let room = "";
+
+	socket.on("disconnect", () => {
+		socket.removeAllListeners();
+	});
+
+	socket.on("join", (group) => {
+		room = group;
+		socket.join(room);
+		console.log(socket.rooms);
+	});
+
 	socket.on("message", async (data) => {
-		console.log(data);
+		const author = await prisma.user.findUnique({
+			where: {
+				email: data.author.email,
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		if (!author) return;
+
+		const message = await prisma.message.create({
+			data: {
+				authorId: author.id,
+				groupChatId: data.group.id,
+				content: data.message,
+			},
+			include: {
+				author: {
+					select: {
+						username: true,
+						profilePicture: true,
+					},
+				},
+			},
+		});
+
+		io.to(socket.id).emit("receiveMessage", { ...message, isAuthor: true });
+		socket.to(room).emit("receiveMessage", message);
 	});
 });
 
