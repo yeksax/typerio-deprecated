@@ -1,16 +1,13 @@
+import { User } from '@/types/interfaces'
 import Image from 'next/image'
+import Link from 'next/link'
 
-interface User {
-  user: {
-    username: string;
-    profilePicture: string;
-    status?: string;
-    isMe: boolean
-  }
+interface UserProps {
+  profile: User
 }
 
-export default function SidebarUser(user: User) {
-  let profile = user.user
+export default function SidebarUser({ profile }: UserProps) {
+  const userUrl = profile.name.toLowerCase().replace(/\s/g, '-') + "_" + profile.tag
 
   return (<div className="flex items-center gap-2 w-full">
     <Image
@@ -19,9 +16,11 @@ export default function SidebarUser(user: User) {
       alt="profile picture"
       width={64}
       height={64} />
-    <div className="flex justify-between flex-col w-full overflow-hidden">
-      <p className={`truncate text-sm ${profile.isMe ? 'font-bold' : "font-medium"}`}>{profile.isMe ? "Eu" : profile.username}</p>
-      <p className='truncate text-xs'>{profile.status || 'No status'}</p>
-    </div>
+    <Link href={profile.isMe ? '/user/me' : `/user/${userUrl}`} className="flex justify-between flex-col w-full overflow-hidden">
+      <p className={`truncate flex items-baseline text-sm ${profile.isMe ? 'font-bold' : "font-medium"}`}>
+        {profile.isMe ? "Eu" : (<>{profile.name}<span className='text-gray-500 text-xs'>#{profile.tag}</span></>)}
+      </p>
+      <p id={`status-${profile.username.replace(/#/g, "").replace(/ /g, "-")}`} className='truncate text-xs'>{profile.status || 'Idle'}</p>
+    </Link>
   </div>)
 }

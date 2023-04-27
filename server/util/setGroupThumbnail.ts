@@ -8,13 +8,7 @@ interface SetThumbnailArgs {
 }
 
 export async function setThumbnail({ id, thumbnail }: SetThumbnailArgs) {
-	// @ts-ignore
-	// @ts-ignore
-	let ext = thumbnail.split(";")[0].split("/")[1];
 	let file = thumbnail.split(";base64,").pop() as string;
-
-	let thumbnailPath = `http://localhost:${process.env.PORT}/files/groups/${id}/thumbnail.png`;
-
 	let filePath = path.join(
 		process.cwd(),
 		"files",
@@ -22,6 +16,9 @@ export async function setThumbnail({ id, thumbnail }: SetThumbnailArgs) {
 		id,
 		`thumbnail.png`
 	);
+
+
+  let thumbnailPath = `http://localhost:${process.env.PORT}/files/groups/${id}/thumbnail.png`;
 
 	fs.mkdir(`${process.cwd()}/files/groups/${id}`, (e) => {});
 
@@ -38,5 +35,5 @@ export async function setThumbnail({ id, thumbnail }: SetThumbnailArgs) {
 		},
 	});
 
-  return group
+  return group.thumbnail
 }

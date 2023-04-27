@@ -14,5 +14,11 @@ export interface Group extends group {
 	};
 }
 
-export interface Message extends message {}
-export interface User extends user {}
+export interface Message extends message {
+	isAuthor: boolean;
+	author: User;
+}
+export interface User extends user {
+	isMe: boolean;
+	status: string;
+}

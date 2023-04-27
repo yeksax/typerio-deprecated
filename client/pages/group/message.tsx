@@ -1,3 +1,4 @@
+import { Message } from "@/types/interfaces";
 import Image from "next/image";
 
 export default function Message({ message, isFirst }: { message: Message, isFirst: boolean }) {
@@ -14,14 +15,14 @@ export default function Message({ message, isFirst }: { message: Message, isFirs
         <Image data-owner={message.author.username} className="rounded-full border-2 border-black w-8 h-8 object-cover aspect-square" src={message.author.profilePicture} width={28} height={28} alt="profile picture" />)
       }
       <div className={`w-fit max-w-[60%] text-black border-2 border-black px-4 py-0.5 text-sm rounded-lg flex flex-col gap-1`}>
-        {!message.isAuthor && isFirst && <span className="font-semibold">{message.author.username}</span>}
-        <div className="flex items-end gap-2 justify-between">
-          <p className="break-all line-clamp-3">{message.content}</p>
-          <span className="text-xs text-gray-400 mt-[-.1rem]">
+        {!message.isAuthor && isFirst && <span className="font-semibold">{message.author.name}</span>}
+        <p className="break-all">
+          {message.content}
+          <span className="text-xs text-gray-400 float-right mt-1 ml-2">
             {time}
           </span>
-        </div>
+        </p>
       </div>
-    </div>
+    </div >
   )
 }

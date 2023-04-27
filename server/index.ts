@@ -21,7 +21,7 @@ const io = new Server(httpServer, {
 	},
 });
 
-app.use(bodyParser({limit: '24mb'}));
+app.use(bodyParser());
 app.use(fileUpload());
 app.use(express.json());
 app.use(cors());
@@ -79,6 +79,8 @@ io.on("connection", (socket) => {
 					select: {
 						username: true,
 						profilePicture: true,
+						name: true,
+						tag: true,
 					},
 				},
 			},
@@ -86,6 +88,10 @@ io.on("connection", (socket) => {
 
 		io.to(socket.id).emit("receiveMessage", { ...message, isAuthor: true });
 		socket.to(room).emit("receiveMessage", message);
+	});
+
+	socket.on("status", async (data) => {
+		io.to(room).emit("status", data)
 	});
 });
 

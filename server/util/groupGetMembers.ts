@@ -8,6 +8,8 @@ export async function getGroupMembers(groupId: string, email: string) {
 		select: {
 			members: {
 				select: {
+					name: true,
+					tag: true,
 					username: true,
 					profilePicture: true,
 					email: true,
@@ -23,6 +25,8 @@ export async function getGroupMembers(groupId: string, email: string) {
 			username: member.username,
 			profilePicture: member.profilePicture,
 			isMe: member.email == email,
+			name: member.name,
+			tag: member.tag,
 		});
 	});
 

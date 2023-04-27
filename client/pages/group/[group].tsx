@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "./sidebar";
 import MessagesContainer from "./messagesContainer";
 import MessageInput from "./messageInput";
+import Head from 'next/head'
 
 import { socket } from "@/service/socket";
 
@@ -11,12 +12,15 @@ import { clientTRPC } from "@/service/trpc";
 import { Group, Message, User } from "@/types/interfaces";
 
 interface Props {
+  user: User,
   users: User[],
   groupData: Group,
   messagesFromDB: any[]
 }
 
-export default function Page({ users, groupData, messagesFromDB }: Props) {
+let groupName = ""
+
+export default function Page({ user, users, groupData, messagesFromDB }: Props) {
   let [messages, setMessages] = useState<Message[]>(messagesFromDB)
 
   function groupMessages(msgs: any) {
@@ -43,19 +47,29 @@ export default function Page({ users, groupData, messagesFromDB }: Props) {
     setMessages(messages => [...messages, message]);
   }
 
+  function setStatus(status: { user: string, status: string }) {
+    // @ts-ignore
+    document.querySelector(`#${status.user}`).innerHTML = status.status;
+  }
+
   useEffect(() => {
     socket.emit('join', groupData.id)
 
     socket.off('receiveMessage', newMessageHandler)
     socket.on('receiveMessage', newMessageHandler)
+    socket.off('status', setStatus)
+    socket.on('status', setStatus)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupData]);
 
   return <section className="h-full flex">
+    <Head>
+      <title>{groupData.name}</title>
+    </Head>
     <Sidebar users={users} group={groupData} />
     <div className="flex flex-col justify-between flex-1">
       <MessagesContainer messages={groupMessages(messages)} />
-      <MessageInput />
+      <MessageInput user={user} />
     </div>
   </section>
 }
@@ -79,6 +93,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async function getS
     email: session?.user?.email as string
   })
 
+  const user = await clientTRPC.user.get.query(session?.user?.email as string)
+
   // Pass data to the page via props
-  return { props: { users, groupData, messagesFromDB } }
+  return { props: { user, users, groupData, messagesFromDB } }
 }

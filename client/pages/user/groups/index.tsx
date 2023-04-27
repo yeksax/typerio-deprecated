@@ -22,7 +22,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
-export default function MyChats({ myGroups }: MyChatsProps) {
+export default function Page({ myGroups }: MyChatsProps) {
   const user = useSession({
     required: true,
   }).data?.user;
@@ -38,4 +38,3 @@ export default function MyChats({ myGroups }: MyChatsProps) {
     <GroupsPreview groups={groups} />
   </div>
 }
-

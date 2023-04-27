@@ -1,11 +1,19 @@
 import { initTRPC, inferAsyncReturnType } from "@trpc/server";
 import * as trpcExpress from "@trpc/server/adapters/express";
+
 const t = initTRPC.create();
- 
-export const createContext = ({
-  req,
-  res,
-}: trpcExpress.CreateExpressContextOptions) => ({}); // no context
+
+export const createContext = async ({
+	req,
+	res,
+}: trpcExpress.CreateExpressContextOptions) => {
+	//@ts-ignore
+	const session = req.session;
+
+	return {
+		session: session,
+	};
+}; // no context
 type Context = inferAsyncReturnType<typeof createContext>;
 
 export const middleware = t.middleware;

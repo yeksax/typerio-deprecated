@@ -21,6 +21,8 @@ export async function getGroupMessages(groupId: string, email: string) {
 						select: {
 							username: true,
 							profilePicture: true,
+							name: true,
+							tag: true
 						},
 					},
 				},

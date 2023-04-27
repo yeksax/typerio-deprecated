@@ -6,7 +6,7 @@ import { getGroupMessages } from "../util/groupGetMessages";
 import { getGroupMembers } from "../util/groupGetMembers";
 import { createGroup } from "../util/groupCreate";
 import { appendGroupToUser } from "../util/userJoinGroup";
-import { setThumbnail } from "../util/setThumbnail";
+import { setThumbnail } from "../util/setGroupThumbnail";
 
 export const groupRouter = router({
 	create: publicProcedure
@@ -30,7 +30,7 @@ export const groupRouter = router({
 				thumbnail: req.input.image,
 			});
 
-			return group.thumbnail;
+			return group;
 		}),
 
 	getGroups: publicProcedure.input(z.string()).query(async (req) => {
