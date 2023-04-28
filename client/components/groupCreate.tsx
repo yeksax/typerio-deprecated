@@ -15,8 +15,13 @@ export default function CreateGroup({ appendGroup, currentGroups }: { appendGrou
   function handleInput(e: any) {
     let length = e.target.value.length
     let min = 1
+    let max = 80
 
-    e.target.style.width = `${Math.max(length, min)}ch`
+    function sort(a: number, b: number) {
+      return a - b
+    }
+
+    e.target.style.width = `${[length, min, max].sort(sort)[1]}ch`
     let currentAttribute = e.target.dataset.attribute
   }
 

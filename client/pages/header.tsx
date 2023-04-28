@@ -25,11 +25,11 @@ export default function Header() {
         <Link className={linkCss} href="/explore">Explorar</Link>
         {session && <>
           <Link className={linkCss} href="/user/groups">Meus Grupos</Link>
-          <Link className={linkCss} href="/premium">Seja Premium</Link></>}
+          <Link className={linkCss} href="/friends">Amigos</Link></>}
       </nav>
       <nav>
         {session ?
-          <Link className={linkCss} href={`/user/settings`}>Meu Perfil</Link> :
+          <Link className={linkCss} href={`/user/me`}>Meu Perfil</Link> :
           <Link className={linkCss} href="/auth/signin">Login</Link>
         }
       </nav>

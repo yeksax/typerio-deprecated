@@ -19,31 +19,37 @@ export default function MessageInput({ user }: UserProps) {
   const messageRef = useRef(null)
   const email = session?.user?.email
 
-  const IDLE_CONSTANT = 2500
+  const IDLE_CONSTANT = 3000
 
-  function setIdle() {
-    console.log('oi')
+  function setStatus(status: string) {
     socket.emit('status', ({
-      user: 'status-' + user.username.replace(/#/g, "").replace(/ /g, "-"),
-      status: "Idle",
+      user: 'status-' + user.username,
+      status: status,
     }))
+
+    clearTimeout(idleChecker)
   }
 
   let idleChecker = setTimeout(() => {
-    setIdle()
+    setStatus('Idle')
   }, IDLE_CONSTANT)
 
   function inputHandler(e: any) {
     autoHeight(e)
+    const message = e.target.value
+
+    if (message === '') {
+      setStatus('Idle')
+      return
+    }
 
     socket.emit('status', ({
-      user: 'status-' + user.username.replace(/#/g, "").replace(/ /g, "-"),
+      user: 'status-' + user.username,
       status: "digitando...",
     }))
 
     clearTimeout(idleChecker)
-    idleChecker = setTimeout(setIdle, IDLE_CONSTANT)
-
+    idleChecker = setTimeout(() => (setStatus('Idle')), IDLE_CONSTANT)
   }
 
   function autoHeight(e: any) {
@@ -56,6 +62,7 @@ export default function MessageInput({ user }: UserProps) {
     e.preventDefault()
     // @ts-ignore
     const message = messageRef.current.value
+
 
     if (message === "") return
     socket.emit('message', {

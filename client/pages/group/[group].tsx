@@ -48,8 +48,10 @@ export default function Page({ user, users, groupData, messagesFromDB }: Props) 
   }
 
   function setStatus(status: { user: string, status: string }) {
-    // @ts-ignore
-    document.querySelector(`#${status.user}`).innerHTML = status.status;
+    try {
+      // @ts-ignore
+      document.querySelector(`#${status.user}`).innerHTML = status.status;
+    } catch { }
   }
 
   useEffect(() => {
@@ -74,7 +76,7 @@ export default function Page({ user, users, groupData, messagesFromDB }: Props) 
   </section>
 }
 
-//@ts-ignore
+// @ts-ignore
 export const getServerSideProps: GetServerSideProps<Props> = async function getServerSideProps(context: GetServerSidePropsContext) {
   // Fetch data from external API
   const session = await getSession(context)
@@ -93,7 +95,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async function getS
     email: session?.user?.email as string
   })
 
-  const user = await clientTRPC.user.get.query(session?.user?.email as string)
+  const user = await clientTRPC.user.getByEmail.query(session?.user?.email as string)
 
   // Pass data to the page via props
   return { props: { user, users, groupData, messagesFromDB } }

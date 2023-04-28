@@ -21,7 +21,7 @@ const io = new Server(httpServer, {
 	},
 });
 
-app.use(bodyParser());
+app.use(bodyParser({limit: "32mb"}));
 app.use(fileUpload());
 app.use(express.json());
 app.use(cors());

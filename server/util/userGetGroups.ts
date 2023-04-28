@@ -1,6 +1,5 @@
 import { Group } from "@prisma/client";
 import { prisma } from "../lib/prisma";
-import { group } from "console";
 
 interface GroupResponse extends Group {
 	isIn?: boolean;

@@ -14,8 +14,6 @@ export default function Explore({ groupsExplore }: ExploreProps) {
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const user = useSession().data?.user || undefined
 
-  console.log(user?.email)
-
   return <GroupsPreview groups={groups} />
 }
 

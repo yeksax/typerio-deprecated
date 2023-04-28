@@ -23,7 +23,6 @@ export async function setThumbnail({ id, thumbnail }: SetThumbnailArgs) {
 	fs.mkdir(`${process.cwd()}/files/groups/${id}`, (e) => {});
 
 	await fs.writeFile(filePath, file, { encoding: "base64" }, (e) => {
-		console.log(e);
 	});
 
 	const group = await prisma.group.update({

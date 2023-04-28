@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { appendGroupToUser } from "./userJoinGroup";
-import { removeAccents } from "./removeAccents";
+import { removeAccents, removeBadCharacteres, removeEmojis } from "./_stringCleaning";
 import axios from "axios";
 
 interface CreateGroupBody {
@@ -29,8 +29,9 @@ export async function createGroup(body: CreateGroupBody) {
 	const lowercase = body.name.toLowerCase().replace(/ /g, "-");
 	let id = await `${lowercase}-${await getRandomWord()}`;
 
-	id = id.replace(/[/?%*:|"<>.;,+$#&^!@¨~\\°=(){}[\]]`´/g, "");
+	id = removeBadCharacteres(id)
 	id = removeAccents(id);
+	id = removeEmojis(id);
 
 	let group = await prisma.group.create({
 		data: {

@@ -11,16 +11,26 @@ datasource db {
 }
 
 model User {
-  id             String    @id @default(uuid())
-  email          String    @unique
-  profilePicture String    @default("/user.png")
-  createdAt      DateTime  @default(now())
+  id       String @id @default(uuid())
+  email    String @unique
+  username String @unique
+
+  profilePicture String   @default("/user.png")
+  createdAt      DateTime @default(now())
   name           String
   tag            String
-  username       String
-  messages       Message[]
-  groupChats     Group[]
-  ownedGroups    Group[]   @relation("OwnedGroups")
+
+  messages    Message[]
+  groupChats  Group[]
+  ownedGroups Group[]   @relation("OwnedGroups")
+
+  preferences   Json?
+  preferencesId Int?  @unique
+
+  directMessages DirectMessage[]
+
+  following  User[] @relation("Friends")
+  followedBy User[] @relation("Friends")
 
   @@index([email])
 }
@@ -38,6 +48,12 @@ model Group {
   messages  Message[]
 }
 
+model DirectMessage {
+  id       String    @id @unique
+  members  User[]
+  messages Message[]
+}
+
 model Message {
   id           Int      @id @default(autoincrement())
   createdAt    DateTime @default(now())
@@ -45,10 +61,16 @@ model Message {
   content      String
   pastVersions String[]
 
-  author      User   @relation(fields: [authorId], references: [id])
-  groupChat   Group  @relation(fields: [groupChatId], references: [id])
-  authorId    String
-  groupChatId String
+  author          User           @relation(fields: [authorId], references: [id])
+  authorId        String
+  groupChat       Group?         @relation(fields: [groupChatId], references: [id])
+  groupChatId     String
+  DirectMessage   DirectMessage? @relation(fields: [directMessageId], references: [id])
+  directMessageId String?
+
+  mentionedByMessages Message[] @relation("MentionedMessage")
+  mentionedMessage    Message?  @relation("MentionedMessage", fields: [mentionedMessageId], references: [id])
+  mentionedMessageId  Int?
 
   @@index([id, authorId])
 }

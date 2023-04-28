@@ -19,5 +19,5 @@ export default function GroupsPreview({ groups }: GroupsProps) {
   }
 
 
-  return <div className="flex flex-col gap-8 px-40 pt-10">{toBeDisplayed}</div>
+  return <div className="flex flex-col gap-8 px-6 md:px-40 pt-10">{toBeDisplayed}</div>
 }

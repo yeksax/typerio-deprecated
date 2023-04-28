@@ -33,7 +33,7 @@ export const groupRouter = router({
 			return group;
 		}),
 
-	getGroups: publicProcedure.input(z.string()).query(async (req) => {
+	getGroups: publicProcedure.input(z.string().optional()).query(async (req) => {
 		let groups = await getGroups(req.input);
 		return groups;
 	}),

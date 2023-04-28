@@ -13,11 +13,11 @@ interface GroupProps {
 export default function GroupPreview({ group }: GroupProps) {
   return (
     <div className="flex gap-4 justify-between last:pb-10">
-      <Image className="h-24 w-24 object-cover aspect-square rounded border-black border-2" src={group.thumbnail || '/group.png'} alt={`${group.name} thumbnail`} width={100} height={100} />
+      <Image className="h-28 w-28 object-cover aspect-square rounded border-black border-2" src={group.thumbnail || '/group.png'} alt={`${group.name} thumbnail`} width={100} height={100} />
       <div className="flex justify-between flex-col w-full overflow-hidden">
         <div className="flex flex-col">
-          <h3 className="text-lg font-semibold">{group.name}</h3>
-          <p className="truncate">{group.description}</p>
+          <h3 className="text-sm md:text-lg truncate font-semibold">{group.name}</h3>
+          <p className="text-xs md:text-sm line-clamp-2">{group.description}</p>
         </div>
         <JoinButton group={group} />
       </div >

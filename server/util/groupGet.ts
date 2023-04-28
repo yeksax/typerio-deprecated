@@ -5,7 +5,7 @@ interface GroupResponse extends Group {
 	isIn?: boolean;
 }
 
-export async function getGroups(email: string) {
+export async function getGroups(email?: string) {
 	let groups: GroupResponse[] = [];
 	let userGroups: Group["id"][] | undefined | null = [];
 

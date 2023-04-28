@@ -267,3 +267,11 @@ export function removeAccents(str: string) {
 
 	return str;
 }
+
+export function removeEmojis(str: string): string {
+	return str.replace(/[\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]/g, "");
+}
+
+export function removeBadCharacteres(str:string){
+	return str.replace(/[^a-zA-Z0-9-_]/g, '');
+}

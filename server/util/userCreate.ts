@@ -20,7 +20,7 @@ export async function createUser({ name, email }: User) {
 				email: email,
 				tag: tag,
 				name: name,
-				username: `${name}#${tag}`,
+				username: `${name.toLowerCase().replace(/\s/g, '-')}_${tag}`,
 			},
 		});
 

@@ -19,6 +19,6 @@ export interface Message extends message {
 	author: User;
 }
 export interface User extends user {
-	isMe: boolean;
-	status: string;
+	isMe?: boolean;
+	status?: string;
 }
