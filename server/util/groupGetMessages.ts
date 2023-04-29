@@ -25,6 +25,11 @@ export async function getGroupMessages(groupId: string, email: string) {
 							tag: true
 						},
 					},
+					mentionedMessage: {
+						include: {
+							author: true,
+						}
+					}
 				},
 				orderBy: {
 					createdAt: "asc",

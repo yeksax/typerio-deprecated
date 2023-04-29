@@ -97,7 +97,8 @@ export default function Page({ user }: ProfileProps) {
     <div className="mx-40 flex flex-col">
       <TextSplitter text="Meu perfil" className="font-bold text-2xl mt-16 mb-8" />
       <div className="flex gap-16">
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           onClick={() => editing && inputFile()}
           className={`rounded-xl border-8 border-black aspect-square w-48 h-48 object-cover ${editing ? "cursor-pointer" : ""}`}
           src={avatar} width={200} height={200} alt="profile picture" />

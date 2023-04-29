@@ -1,27 +1,13 @@
-import { useEffect, useRef } from "react"
-import Message from "./message"
+import { useEffect, useRef, useState } from "react"
 import MessageGroup from "./messageGroup"
+import { Message } from "@/types/interfaces"
 
 interface Props {
   messages: Message[][]
+  setMention: (mention: Message) => void
 }
 
-interface Message {
-  id: 2,
-  createdAt: Date,
-  updatedAt: Date,
-  content: string,
-  pastVersions: Message[],
-  authorId: string,
-  groupChatId: string,
-  author: {
-    username: string,
-    profilePicture: string
-  },
-  isAuthor: true
-}
-
-export default function MessagesContainer({ messages }: Props) {
+export default function MessagesContainer({ messages, setMention }: Props) {
   const messagesContainer = useRef(null)
 
   useEffect(() => {
@@ -38,9 +24,10 @@ export default function MessagesContainer({ messages }: Props) {
   }, [messages])
 
 
+
   return (
     <main className="flex-1 py-4 px-8 flex flex-col gap-6 overflow-y-scroll scroll-smooth scroll" ref={messagesContainer}>
-      {messages.map((messageGroup, i) => <MessageGroup key={i} messages={messageGroup} />)}
+      {messages.map((messageGroup, i) => <MessageGroup setMention={setMention} key={i} messages={messageGroup} />)}
     </main>
   )
 }

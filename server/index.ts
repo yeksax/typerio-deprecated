@@ -21,7 +21,7 @@ const io = new Server(httpServer, {
 	},
 });
 
-app.use(bodyParser({limit: "32mb"}));
+app.use(bodyParser({ limit: "32mb" }));
 app.use(fileUpload());
 app.use(express.json());
 app.use(cors());
@@ -67,12 +67,14 @@ io.on("connection", (socket) => {
 		});
 
 		if (!author) return;
+		console.log(data);
 
 		const message = await prisma.message.create({
 			data: {
 				authorId: author.id,
 				groupChatId: data.group.id,
 				content: data.message,
+				mentionedMessageId: data.mention,
 			},
 			include: {
 				author: {
@@ -83,6 +85,11 @@ io.on("connection", (socket) => {
 						tag: true,
 					},
 				},
+				mentionedMessage: {
+					include: {
+						author: true,
+					},
+				},
 			},
 		});
 
@@ -91,7 +98,7 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("status", async (data) => {
-		io.to(room).emit("status", data)
+		io.to(room).emit("status", data);
 	});
 });
 

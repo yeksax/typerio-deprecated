@@ -17,7 +17,9 @@ export interface Group extends group {
 export interface Message extends message {
 	isAuthor: boolean;
 	author: User;
+	mentionedMessage: Message;
 }
+
 export interface User extends user {
 	isMe?: boolean;
 	status?: string;

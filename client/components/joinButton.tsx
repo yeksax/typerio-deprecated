@@ -1,3 +1,4 @@
+import { Group } from "@/types/interfaces";
 import Link from "next/link";
 
 interface JoinProps {

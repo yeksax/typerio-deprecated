@@ -21,7 +21,8 @@ interface Props {
 let groupName = ""
 
 export default function Page({ user, users, groupData, messagesFromDB }: Props) {
-  let [messages, setMessages] = useState<Message[]>(messagesFromDB)
+  const [messages, setMessages] = useState<Message[]>(messagesFromDB)
+  const [mention, setMention] = useState<Message | null>(null)
 
   function groupMessages(msgs: any) {
     let groupedMessages: any[] = [[]];
@@ -70,8 +71,8 @@ export default function Page({ user, users, groupData, messagesFromDB }: Props) 
     </Head>
     <Sidebar users={users} group={groupData} />
     <div className="flex flex-col justify-between flex-1">
-      <MessagesContainer messages={groupMessages(messages)} />
-      <MessageInput user={user} />
+      <MessagesContainer messages={groupMessages(messages)} setMention={setMention} />
+      <MessageInput user={user} mention={mention} setMention={setMention} />
     </div>
   </section>
 }

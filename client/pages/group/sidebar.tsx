@@ -1,4 +1,3 @@
-import { group } from "console";
 import SidebarUser from "./sidebarUser";
 import Image from 'next/image'
 import { Group, User } from "@/types/interfaces";

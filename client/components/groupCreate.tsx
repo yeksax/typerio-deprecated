@@ -30,8 +30,6 @@ export default function CreateGroup({ appendGroup, currentGroups }: { appendGrou
     let file = event.target.files[0]
     let reader = new FileReader()
 
-    console.log(file)
-
     reader.onload = function (e) {
       setThumbnail(e.target?.result as string)
     };

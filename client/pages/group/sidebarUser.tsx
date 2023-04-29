@@ -1,5 +1,4 @@
 import { User } from '@/types/interfaces'
-import Image from 'next/image'
 import Link from 'next/link'
 
 interface UserProps {
@@ -11,8 +10,9 @@ export default function SidebarUser({ profile }: UserProps) {
 
   return (<Link href={profile.isMe ? '/user/me' : `/user/${userUrl}`}
     className="flex items-center p-1 px-2 gap-2 w-full rounded-md hover:bg-gray-100 transition-colors"
-    >
-    <Image
+  >
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img
       src={profile.profilePicture}
       className="w-10 h-10 rounded-full  aspect-square object-cover"
       alt="profile picture"

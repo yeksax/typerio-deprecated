@@ -24,8 +24,9 @@ export default function Header() {
       <nav className="flex gap-12">
         <Link className={linkCss} href="/explore">Explorar</Link>
         {session && <>
-          <Link className={linkCss} href="/user/groups">Meus Grupos</Link>
-          <Link className={linkCss} href="/friends">Amigos</Link></>}
+          <Link className={linkCss} href="/user/groups">Meus Chats</Link>
+          {/* <Link className={linkCss} href="/friends">Amigos</Link> */}
+        </>}
       </nav>
       <nav>
         {session ?

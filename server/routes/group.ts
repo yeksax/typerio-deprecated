@@ -33,10 +33,12 @@ export const groupRouter = router({
 			return group;
 		}),
 
-	getGroups: publicProcedure.input(z.string().optional()).query(async (req) => {
-		let groups = await getGroups(req.input);
-		return groups;
-	}),
+	getGroups: publicProcedure
+		.input(z.string().optional())
+		.query(async (req) => {
+			let groups = await getGroups(req.input);
+			return groups;
+		}),
 
 	getGroup: publicProcedure.input(z.string()).query(async (req) => {
 		let group = await getGroup(req.input);
@@ -64,7 +66,6 @@ export const groupRouter = router({
 				req.input.user,
 				req.input.group
 			);
-			console.log(group);
 			return group;
 		}),
 });
