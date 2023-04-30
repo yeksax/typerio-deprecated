@@ -1,6 +1,7 @@
 import SidebarUser from "./sidebarUser";
 import Image from 'next/image'
 import { Group, User } from "@/types/interfaces";
+import { useState } from "react";
 
 
 interface Props {
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export default function Sidebar(data: Props) {
+  const [users, setUsers] = useState<User[]>(data.users)
+
   return (
     <div className="border-r border-black h-full w-60 flex flex-col justify-between p-4">
       <div className="flex flex-col gap-4">

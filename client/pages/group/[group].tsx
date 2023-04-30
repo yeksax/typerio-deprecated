@@ -10,6 +10,9 @@ import { socket } from "@/service/socket";
 import { GetServerSideProps, GetServerSidePropsContext } from "next/types";
 import { clientTRPC } from "@/service/trpc";
 import { Group, Message, User } from "@/types/interfaces";
+import axios from "axios";
+import { getCookie } from "cookies-next";
+import { getCurrentlyPlaying } from "@/service/spotify";
 
 interface Props {
   user: User,
@@ -23,6 +26,9 @@ let groupName = ""
 export default function Page({ user, users, groupData, messagesFromDB }: Props) {
   const [messages, setMessages] = useState<Message[]>(messagesFromDB)
   const [mention, setMention] = useState<Message | null>(null)
+  const [status, setStatus] = useState("Idle")
+  const [spotifyStatus, setSpotifyStatus] = useState("Idle")
+
 
   function groupMessages(msgs: any) {
     let groupedMessages: any[] = [[]];
@@ -48,11 +54,8 @@ export default function Page({ user, users, groupData, messagesFromDB }: Props) 
     setMessages(messages => [...messages, message]);
   }
 
-  function setStatus(status: { user: string, status: string }) {
-    try {
-      // @ts-ignore
-      document.querySelector(`#${status.user}`).innerHTML = status.status;
-    } catch { }
+  function updateStatus(status: { user: string, status: string }) {
+    document.querySelector(`#${status.user}`)!.innerHTML = status.status;
   }
 
   useEffect(() => {
@@ -60,10 +63,41 @@ export default function Page({ user, users, groupData, messagesFromDB }: Props) 
 
     socket.off('receiveMessage', newMessageHandler)
     socket.on('receiveMessage', newMessageHandler)
-    socket.off('status', setStatus)
-    socket.on('status', setStatus)
+    socket.off('status', updateStatus)
+    socket.on('status', updateStatus)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupData]);
+
+  const spotifyAcessToken = getCookie('spotify_access_token')
+
+  useEffect(() => {
+    if (!spotifyAcessToken) {
+      // setSeconds(0); // if you want to reset it as well
+      return;
+    }
+
+    getCurrentlyPlaying(spotifyAcessToken as string).then(res => {
+      setSpotifyStatus(`Ouvindo <strong>${res.item.name}</strong>`)
+    });
+    
+
+    const interval = setInterval(async () => {
+      let currentlyPlaying = await getCurrentlyPlaying(spotifyAcessToken as string);
+      setSpotifyStatus(`Ouvindo <strong>${currentlyPlaying.item.name}</strong>`)
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [spotifyAcessToken]);
+
+  useEffect(() => {
+    if (status != 'digitando...') setStatus(spotifyStatus)
+  }, [spotifyStatus, status])
+
+  useEffect(() => {
+    socket.emit('status', ({
+      user: 'status-' + user.username,
+      status: status,
+    }))
+  }, [status, user.username])
 
   return <section className="h-full flex">
     <Head>
@@ -72,7 +106,7 @@ export default function Page({ user, users, groupData, messagesFromDB }: Props) 
     <Sidebar users={users} group={groupData} />
     <div className="flex flex-col justify-between flex-1">
       <MessagesContainer messages={groupMessages(messages)} setMention={setMention} />
-      <MessageInput user={user} mention={mention} setMention={setMention} />
+      <MessageInput setStatus={setStatus} defaultStatus={spotifyStatus} user={user} mention={mention} setMention={setMention} />
     </div>
   </section>
 }

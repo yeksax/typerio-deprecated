@@ -4,56 +4,42 @@ import { faClose, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useEffect, useRef, } from "react";
+import { useEffect, useRef, useState, } from "react";
 import { motion } from "framer-motion";
 
 interface UserProps {
   user: User,
   mention: Message | null
   setMention: (mention: Message | null) => void
+  setStatus: (value: string) => void
+  defaultStatus: string
 }
 
-export default function MessageInput({ user, setMention, mention }: UserProps) {
+export default function MessageInput({ user, setMention, mention, setStatus, defaultStatus }: UserProps) {
   const router = useRouter()
   const group = router.query.group
 
   const { data: session } = useSession()
+  const idleTimer = useRef<NodeJS.Timeout | null>(null)
 
   const messageRef = useRef<HTMLTextAreaElement>(null)
   const email = session?.user?.email
 
-  const IDLE_CONSTANT = 3000
-
-  function setStatus(status: string) {
-    socket.emit('status', ({
-      user: 'status-' + user.username,
-      status: status,
-    }))
-
-    clearTimeout(idleChecker)
-  }
-
-  let idleChecker = setTimeout(() => {
-    setStatus('Idle')
-  }, IDLE_CONSTANT)
+  const IDLE_CONSTANT = 1500
 
   function inputHandler(e: any) {
     autoHeight(e)
-    const message = e.target.value
+    setStatus('digitando...')
 
-    if (message === '') {
-      setStatus('Idle')
-      return
-    }
-
-    socket.emit('status', ({
-      user: 'status-' + user.username,
-      status: "digitando...",
-    }))
-
-    clearTimeout(idleChecker)
-    idleChecker = setTimeout(() => (setStatus('Idle')), IDLE_CONSTANT)
+    clearTimeout(idleTimer.current!)
+    idleTimer.current = setTimeout(() => {
+      setStatus(defaultStatus)
+    }, IDLE_CONSTANT)
   }
+
+  useEffect(() => {
+
+  }, [defaultStatus])
 
   function autoHeight(e: any) {
     let element = e.target
