@@ -67,7 +67,6 @@ io.on("connection", (socket) => {
 		});
 
 		if (!author) return;
-		console.log(data);
 
 		const message = await prisma.message.create({
 			data: {

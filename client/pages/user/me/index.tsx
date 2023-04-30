@@ -8,6 +8,10 @@ import { useEffect, useRef, useState } from "react";
 import InfoContainer from "./editInfo";
 import InfoWrapper from "./infoWrapper";
 import Separator from "./verticalSeparator";
+import Link from "next/link";
+import Connection from "./connection";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLastfm, faSpotify } from "@fortawesome/free-brands-svg-icons";
 
 interface ProfileProps {
   user: User
@@ -135,8 +139,14 @@ export default function Page({ user }: ProfileProps) {
         </div>
       </div>
 
-      <TextSplitter text="Configurações" className="font-bold text-2xl mt-32 mb-8" />
+      <TextSplitter text="Conexões" className="font-bold text-2xl mt-32 mb-8" />
 
+      <div className="grid grid-cols-2 gap-x-8">
+            <Connection url="/api/spotify/connect">
+              <span>Spotify</span>
+              <FontAwesomeIcon icon={faSpotify} className="text-2xl"/>
+            </Connection>
+      </div>
 
     </div >
   )
