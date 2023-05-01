@@ -12,7 +12,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const refresh_token = req.query.refresh_token as string
 
   setCookie('spotify_access_token', access_token, { req, res, maxAge: 60 * 60 });
-  setCookie('spotify_refresh_token', refresh_token, { req, res, maxAge: 60 * 60 });
+  setCookie('spotify_refresh_token', refresh_token, { req, res });
 
   res.redirect('http://localhost:3000/user/me')
 }

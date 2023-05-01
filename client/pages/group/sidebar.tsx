@@ -2,6 +2,7 @@ import SidebarUser from "./sidebarUser";
 import Image from 'next/image'
 import { Group, User } from "@/types/interfaces";
 import { useState } from "react";
+import Link from "next/link";
 
 
 interface Props {
@@ -13,13 +14,12 @@ export default function Sidebar(data: Props) {
   const [users, setUsers] = useState<User[]>(data.users)
 
   return (
-    <div className="border-r border-black h-full w-60 flex flex-col justify-between p-4">
-      <div className="flex flex-col gap-4">
+    <div className="border-r-2 border-black h-full w-60 gap-8 flex flex-col justify-between p-4">
+      <div className="flex flex-col gap-2 flex-1">
         {data.users.map((user, i) => (
-          <SidebarUser key={new Date().getTime() + i} profile={user} />
+          <SidebarUser key={user.username} profile={user} />
         )
         )}
-
 
       </div>
 

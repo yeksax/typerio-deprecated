@@ -11,7 +11,7 @@ interface UserProps {
   user: User,
   mention: Message | null
   setMention: (mention: Message | null) => void
-  setStatus: (value: string) => void
+  setStatus: ({ title, data }: { title: string, data?: any }) => void
   defaultStatus: string
 }
 
@@ -25,21 +25,17 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
   const messageRef = useRef<HTMLTextAreaElement>(null)
   const email = session?.user?.email
 
-  const IDLE_CONSTANT = 1500
+  const IDLE_CONSTANT = 1000
 
   function inputHandler(e: any) {
     autoHeight(e)
-    setStatus('digitando...')
+    setStatus({ title: 'digitando...' })
 
     clearTimeout(idleTimer.current!)
     idleTimer.current = setTimeout(() => {
-      setStatus(defaultStatus)
+      setStatus({ title: defaultStatus })
     }, IDLE_CONSTANT)
   }
-
-  useEffect(() => {
-
-  }, [defaultStatus])
 
   function autoHeight(e: any) {
     let element = e.target

@@ -51,9 +51,16 @@ io.on("connection", (socket) => {
 		socket.removeAllListeners();
 	});
 
-	socket.on("join", (group) => {
+	socket.on("join", ({ group, user }: { group: string; user: string }) => {
 		room = group;
 		socket.join(room);
+		socket.to(room).emit("status", {
+			user: user,
+			status: {
+				title: "Idle",
+				data: {}
+			}
+		});
 	});
 
 	socket.on("message", async (data) => {

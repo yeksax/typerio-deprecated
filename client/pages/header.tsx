@@ -7,15 +7,6 @@ export default function Header() {
 
   const linkCss = "hover:font-semibold transition-all"
 
-  let isChatting = false
-  let chat: string;
-
-  const router = useRouter()
-  if (router.pathname == '/group/[group]') {
-    isChatting = true
-    chat = router.query.group as string
-  }
-
   return (
     <header className={`px-6 md:px-40 h-20 flex justify-between items-center border-b-2 border-b-black fixed top-0 left-0 w-full glass`}>
       <Link href='/' className="text-2xl upercase font-extrabold">

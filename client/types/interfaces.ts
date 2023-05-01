@@ -22,5 +22,5 @@ export interface Message extends message {
 
 export interface User extends user {
 	isMe?: boolean;
-	status?: string;
+	status?: { title: string; data?: any };
 }

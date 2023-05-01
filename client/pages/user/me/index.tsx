@@ -99,7 +99,7 @@ export default function Page({ user }: ProfileProps) {
 
   return (
     <div className="mx-40 flex flex-col">
-      <TextSplitter text="Meu perfil" className="font-bold text-2xl mt-16 mb-8" />
+      <TextSplitter text="Meu perfil" className="font-bold text-2xl mt-8 mb-8" />
       <div className="flex gap-16">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img

@@ -71,9 +71,9 @@ export default function MessageComponent({ message, isFirst, setMention }: Messa
                 <span className="font-semibold">
                   {message.mentionedMessage.author.name}
                 </span>
-                <p className="break-all">
+                <pre className="break-all">
                   {message.mentionedMessage.content}
-                </p>
+                </pre>
               </div>
             </div>
           )}
