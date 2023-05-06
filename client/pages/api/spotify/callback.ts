@@ -1,6 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import { NextResponse } from "next/server";
 import queryString from "query-string";
 const request = require("request");
 
@@ -11,8 +10,6 @@ type Data = {
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
 	var code = req.query.code || null;
 	var state = req.query.state || null;
-
-	// console.log(code, state);
 
 	if (state === null) {
 		res.redirect(
@@ -43,7 +40,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 		// @ts-ignore
 		request.post(authOptions, function (error, response, body) {
-			// console.log(body);
 			if (!error && response.statusCode === 200) {
 				var access_token = body.access_token,
 					refresh_token = body.refresh_token;

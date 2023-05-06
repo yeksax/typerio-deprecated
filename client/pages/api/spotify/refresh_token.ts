@@ -10,8 +10,6 @@ type Data = {
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
 	let refreshToken = getCookie("spotify_refresh_token", { req, res });
 
-	console.log(refreshToken);
-
 	var authOptions = {
 		url: "https://accounts.spotify.com/api/token",
 		headers: {
@@ -30,8 +28,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 	//@ts-ignore
 	request.post(authOptions, function (error, response, body) {
-		console.log(body);
-
 		if (!error && response.statusCode === 200) {
 			var access_token = body.access_token;
 			setCookie("spotify_access_token", access_token, {
@@ -39,7 +35,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 				res,
 				maxAge: 60 * 60,
 			});
-			res.status(200).send(200);
+			res.redirect(req.headers.referer as string)
 		}
 	});
 }

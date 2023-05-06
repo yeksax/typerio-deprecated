@@ -31,6 +31,7 @@ model User {
 
   following  User[] @relation("Friends")
   followedBy User[] @relation("Friends")
+  Post       Post[]
 
   @@index([email])
 }
@@ -46,6 +47,7 @@ model Group {
   members   User[]
   createdAt DateTime  @default(now())
   messages  Message[]
+  Post      Post[]
 }
 
 model DirectMessage {
@@ -55,7 +57,7 @@ model DirectMessage {
 }
 
 model Message {
-  id           Int      @id @default(autoincrement())
+  id           String   @id @default(uuid())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   content      String
@@ -70,7 +72,38 @@ model Message {
 
   mentionedByMessages Message[] @relation("MentionedMessage")
   mentionedMessage    Message?  @relation("MentionedMessage", fields: [mentionedMessageId], references: [id])
-  mentionedMessageId  Int?
+  mentionedMessageId  String?
 
   @@index([id, authorId])
+}
+
+model Post {
+  id     String @id @default(uuid())
+  author User   @relation(fields: [userId], references: [id])
+  invite Group? @relation(fields: [groupId], references: [id])
+
+  userId  String
+  groupId String?
+
+  content     String
+  attachments String[]
+  likes       Int
+
+  mentionedByPosts Post[]  @relation("MentionedPost")
+  mentionedPost    Post?   @relation("MentionedPost", fields: [mentionedPostId], references: [id])
+  mentionedPostId  String?
+
+  MentionedInReply Reply[] @relation("MentionedPostInReply")
+  Replies          Reply[]
+}
+
+model Reply {
+  id     String  @id @default(uuid())
+  Post   Post?   @relation(fields: [postId], references: [id])
+  postId String?
+
+  content String
+
+  mention   Post   @relation("MentionedPostInReply", fields: [mentionId], references: [id])
+  mentionId String
 }

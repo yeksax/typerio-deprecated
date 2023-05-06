@@ -13,9 +13,10 @@ interface UserProps {
   setMention: (mention: Message | null) => void
   setStatus: ({ title, data }: { title: string, data?: any }) => void
   defaultStatus: string
+  users: User[]
 }
 
-export default function MessageInput({ user, setMention, mention, setStatus, defaultStatus }: UserProps) {
+export default function MessageInput({ user, setMention, mention, setStatus, defaultStatus, users }: UserProps) {
   const router = useRouter()
   const group = router.query.group
 
@@ -23,12 +24,20 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
   const idleTimer = useRef<NodeJS.Timeout | null>(null)
 
   const messageRef = useRef<HTMLTextAreaElement>(null)
+  const mentionRef = useRef<HTMLSpanElement>(null)
   const email = session?.user?.email
+
+  const [userMentions, setUserMentions] = useState<string[]>([])
 
   const IDLE_CONSTANT = 1000
 
   function inputHandler(e: any) {
     autoHeight(e)
+    if (e.target.value == '') {
+      setStatus({ title: defaultStatus })
+      return
+    }
+
     setStatus({ title: 'digitando...' })
 
     clearTimeout(idleTimer.current!)
@@ -49,7 +58,10 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
     const message = messageRef.current.value
 
 
-    if (message === "") return
+    if (message === "") {
+      setStatus({ title: defaultStatus })
+      return
+    }
     socket.emit('message', {
       // @ts-ignore
       message: message,
@@ -58,12 +70,11 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
       group: { id: group }
     })
 
-    // setMentionedMessage(null)
-
     // @ts-ignore
     messageRef.current.value = ""
     autoHeight(e)
     setMention(null)
+    setUserMentions([])
   }
 
   function shortcutHandler(e: any) {
@@ -75,11 +86,12 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
     if (e.key == 'Escape') {
       setMention(null)
     }
+
   }
 
   const highlightMention = [
     { marign: "0" },
-    { margin: "0 24px" },
+    { margin: "0 12px" },
     { margin: "0" },
   ];
 
@@ -95,22 +107,27 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
   }, [mention])
 
   return (
-    <div className="mx-8 border-2 border-black rounded-lg mb-6 px-6 flex flex-col gap-0">
+    <div className="mx-12 border-2 border-black rounded-lg mb-6 px-6 flex flex-col gap-0">
       <motion.div
         animate={{
-          height: mention ? "40px" : 0
+          height: mention ? "60px" : 0
         }}
         transition={{
           duration: 0.1,
         }}
         className="text-gray-800 flex justify-between items-center text-sm"
       >
-        <span className="break-all line-clamp-1" onClick={() => {
+        <span className="break-all flex flex-col line-clamp-1 border-l-2 pl-2 border-gray-500" onClick={() => {
           let mentionEl: HTMLElement | null = document.querySelector(`#message-${mention?.id}`)
           mentionEl?.scrollIntoView({ behavior: "smooth" })
           mentionEl!.animate(highlightMention, highlightMentionTiming)
         }}>
-          {mention?.content}
+          <span className="font-semibold">
+            {mention?.author.name}
+          </span>
+          <span>
+            {mention?.content}
+          </span>
         </span>
         {mention && <FontAwesomeIcon icon={faClose} className="text-black cursor-pointer" onClick={() => setMention(null)} />}
       </motion.div>

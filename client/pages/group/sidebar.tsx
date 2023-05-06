@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import SidebarUser from "./sidebarUser";
 import Image from 'next/image'
 import { Group, User } from "@/types/interfaces";
@@ -15,24 +16,28 @@ export default function Sidebar(data: Props) {
 
   return (
     <div className="border-r-2 border-black h-full w-60 gap-8 flex flex-col justify-between p-4">
+
+      <Link href='/' className="text-2xl upercase font-extrabold">
+        TYPER
+      </Link>
+
       <div className="flex flex-col gap-2 flex-1">
         {data.users.map((user, i) => (
           <SidebarUser key={user.username} profile={user} />
         )
         )}
-
       </div>
 
       <div className="flex gap-4">
-        <Image
-          src={data.group.thumbnail}
+        <img
+          src={data.users[0].profilePicture}
           className="w-10 h-10 aspect-square object-cover rounded-md border-2 border-black"
           alt="group thumbnail"
           width={64}
           height={64} />
-        <div className="flex justify-between flex-col w-full overflow-hidden">
-          <p className='truncate text-sm font-bold'>{data.group.name}</p>
-          <p className='truncate text-xs'>{data.group._count?.members + " membros"}</p>
+        <div className="flex gap-0.5 justify-center flex-col w-full overflow-hidden">
+          <p className='truncate text-sm font-bold'>{data.users[0].name}</p>
+          <p className='truncate text-xs'>#{data.users[0].tag}</p>
         </div>
       </div>
     </div>

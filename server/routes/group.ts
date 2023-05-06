@@ -1,12 +1,12 @@
 import { router, publicProcedure } from "../trpc";
 import { z } from "zod";
-import { prisma } from "../lib/prisma";
 import { getGroup, getGroups } from "../util/groupGet";
 import { getGroupMessages } from "../util/groupGetMessages";
 import { getGroupMembers } from "../util/groupGetMembers";
 import { createGroup } from "../util/groupCreate";
 import { appendGroupToUser } from "../util/userJoinGroup";
 import { setThumbnail } from "../util/setGroupThumbnail";
+import axios from "axios";
 
 export const groupRouter = router({
 	create: publicProcedure
@@ -37,6 +37,7 @@ export const groupRouter = router({
 		.input(z.string().optional())
 		.query(async (req) => {
 			let groups = await getGroups(req.input);
+
 			return groups;
 		}),
 

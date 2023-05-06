@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpotify } from '@fortawesome/free-brands-svg-icons';
+import { faArrowLeft, faBackwardStep, faForwardStep, faPause } from '@fortawesome/free-solid-svg-icons';
 
 const parse = require('html-react-parser');
 
@@ -70,6 +71,9 @@ export default function SidebarUser({ profile }: UserProps) {
           className='fixed p-2 border-2 border-black rounded-md bg-white'
           onMouseOver={() => { setHovering(true); setShouldMove(false) }}
           onMouseLeave={() => setHovering(false)}
+          initial={{
+            display: 'none'
+          }}
           animate={{
             left: coordinates[0],
             top: coordinates[1],
@@ -109,7 +113,7 @@ export default function SidebarUser({ profile }: UserProps) {
                     Ouvindo no {" "}
                     <span className='font-bold'>Spotify</span>
                   </h3>
-                  <FontAwesomeIcon className='ml-4' size='lg' icon={faSpotify} />
+                  <FontAwesomeIcon className='ml-4 cursor-pointer' size='lg' icon={faSpotify} onClick={() => { setHovering(false) }} />
                 </h3>
                 <Link href={"https://open.spotify.com/track/" + data.id} target='_blank' className="flex gap-2">
                   <Image

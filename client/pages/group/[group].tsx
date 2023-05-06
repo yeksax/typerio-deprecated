@@ -66,7 +66,7 @@ export default function GroupPage({ user, usersFromDB, groupData, messagesFromDB
   }
 
   useEffect(() => {
-    socket.emit('join', {group: groupData.id, user: user.username})
+    socket.emit('join', { group: groupData.id, user: user.username })
 
     socket.off('receiveMessage', newMessageHandler)
     socket.on('receiveMessage', newMessageHandler)
@@ -140,9 +140,9 @@ export default function GroupPage({ user, usersFromDB, groupData, messagesFromDB
     </Head>
     <Sidebar users={users} group={groupData} />
     <div className="flex flex-col justify-between flex-1">
-      <GroupHeader group={groupData} />
+      <GroupHeader group={groupData} typingUsers={users.filter(user => user.status?.title == "digitando...").map(user => user.name)} />
       <MessagesContainer messages={groupMessages(messages)} setMention={setMention} />
-      <MessageInput setStatus={setStatus} defaultStatus={spotifyStatus ? spotifyStatus.title : "Idle"} user={user} mention={mention} setMention={setMention} />
+      <MessageInput setStatus={setStatus} users={users} defaultStatus={spotifyStatus ? spotifyStatus.title : "Idle"} user={user} mention={mention} setMention={setMention} />
     </div>
   </section>
 }

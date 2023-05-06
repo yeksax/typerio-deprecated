@@ -22,7 +22,6 @@ export default function Page({ user }: ProfileProps) {
   const [avatar, setAvatar] = useState(user.profilePicture)
   const imageInputRef = useRef(null)
   const formRef = useRef<HTMLFormElement>(null)
-  const isFirstRender = useRef(true);
 
   const [profile, setProfile] = useState({
     name: user.name,
@@ -69,7 +68,6 @@ export default function Page({ user }: ProfileProps) {
         base64string: avatar
       })
     }
-
 
     clientTRPC.user.update.mutate({
       id: user.id,
@@ -142,9 +140,7 @@ export default function Page({ user }: ProfileProps) {
       <TextSplitter text="Conexões" className="font-bold text-2xl mt-32 mb-8" />
 
       <div className="grid grid-cols-2 gap-x-8">
-            <Connection url="/api/spotify/connect">
-              <span>Spotify</span>
-              <FontAwesomeIcon icon={faSpotify} className="text-2xl"/>
+            <Connection provider="Spotify" providerCookie="spotify_access_token" icon={faSpotify} url="/api/spotify/connect">
             </Connection>
       </div>
 

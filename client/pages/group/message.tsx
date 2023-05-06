@@ -28,7 +28,7 @@ export default function MessageComponent({ message, isFirst, setMention }: Messa
 
   const highlightMention = [
     { marign: "0" },
-    { margin: "0 24px" },
+    { margin: "0 12px" },
     { margin: "0" },
   ];
 
@@ -49,7 +49,7 @@ export default function MessageComponent({ message, isFirst, setMention }: Messa
     >
       {!message.isAuthor && isFirst && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img data-owner={message.author.username} className="rounded-full self-start border-2 border-black w-8 h-8 object-cover aspect-square" src={message.author.profilePicture} width={28} height={28} alt="profile picture" />)
+        <img data-owner={message.author.username} className="rounded-lg self-start border-2 border-black w-8 h-8 object-cover aspect-square" src={message.author.profilePicture} width={28} height={28} alt="profile picture" />)
       }
       <motion.div
         animate={{
@@ -59,14 +59,13 @@ export default function MessageComponent({ message, isFirst, setMention }: Messa
         {!message.isAuthor && isFirst && <span className="font-semibold">{message.author.name}</span>}
         <div className="flex flex-col gap-2">
           {message.mentionedMessageId && (
-            <div className="flex gap-2 mt-1 cursor-pointer"
+            <div className="flex gap-2 mt-1 cursor-pointer border-l-2 pl-2 border-gray-500"
               onClick={() => {
                 let mention: HTMLElement | null = document.querySelector(`#message-${message.mentionedMessage.id}`)
                 mention?.scrollIntoView({ behavior: "smooth" })
                 mention!.animate(highlightMention, highlightMentionTiming)
               }}
             >
-              <span className="border-r-2 border-gray-500"></span>
               <div className="text-xs text-gray-800">
                 <span className="font-semibold">
                   {message.mentionedMessage.author.name}

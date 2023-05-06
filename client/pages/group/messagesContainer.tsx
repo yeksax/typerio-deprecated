@@ -26,7 +26,7 @@ export default function MessagesContainer({ messages, setMention }: Props) {
 
 
   return (
-    <main className="flex-1 py-4 px-8 flex flex-col gap-6 overflow-y-scroll scroll-smooth scroll" ref={messagesContainer}>
+    <main className="flex-1 py-4 px-12 flex flex-col gap-6 overflow-y-scroll scroll-smooth scroll" ref={messagesContainer}>
       {messages.map((messageGroup, i) => <MessageGroup setMention={setMention} key={i} messages={messageGroup} />)}
     </main>
   )

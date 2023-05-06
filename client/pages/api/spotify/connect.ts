@@ -19,7 +19,7 @@ function generateRandomString(length: number): string {
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
 	var state = generateRandomString(16);
-	var scope = "user-read-currently-playing";
+	var scope = ["user-read-currently-playing", "user-modify-playback-state"].join(" ");
 
 	res.redirect(
 		"https://accounts.spotify.com/authorize?" +

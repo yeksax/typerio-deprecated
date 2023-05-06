@@ -8,14 +8,14 @@ export default function Header() {
   const linkCss = "hover:font-semibold transition-all"
 
   return (
-    <header className={`px-6 md:px-40 h-20 flex justify-between items-center border-b-2 border-b-black fixed top-0 left-0 w-full glass`}>
+    <header className={`px-6 md:px-12 h-20 flex justify-between items-center border-b-2 border-b-black fixed top-0 left-0 w-full glass`}>
       <Link href='/' className="text-2xl upercase font-extrabold">
         TYPER
       </Link>
       <nav className="flex gap-12">
         <Link className={linkCss} href="/explore">Explorar</Link>
         {session && <>
-          <Link className={linkCss} href="/user/groups">Meus Chats</Link>
+          <Link className={linkCss} href="/user/groups">Chats</Link>
           {/* <Link className={linkCss} href="/friends">Amigos</Link> */}
         </>}
       </nav>
