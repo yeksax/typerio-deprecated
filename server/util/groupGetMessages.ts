@@ -17,6 +17,7 @@ export async function getGroupMessages(groupId: string, email: string) {
 		select: {
 			messages: {
 				include: {
+					attachments: true,
 					author: {
 						select: {
 							username: true,

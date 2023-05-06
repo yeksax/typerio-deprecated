@@ -29,7 +29,6 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
-    "@types/node": "^18.15.12",
     "prisma": "^4.13.0",
     "typescript": "^5.0.4"
   }

@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { inferAsyncReturnType, initTRPC } from "@trpc/server";
@@ -7,8 +7,11 @@ import { prisma } from "./lib/prisma";
 
 import { appRouter } from "./routes/_app";
 import { createContext } from "./trpc";
-import bodyParser from "body-parser";
+import { messageHandler } from "./util/messageCreate";
+
 // import groupController from "./controllers/groupController";
+const express = require("express");
+const bodyParser = require("body-parser");
 
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
@@ -19,6 +22,7 @@ const io = new Server(httpServer, {
 	cors: {
 		origin: "*",
 	},
+	maxHttpBufferSize: 64 * 1024 * 1024,
 });
 
 app.use(bodyParser({ limit: "32mb" }));
@@ -33,8 +37,6 @@ app.use(
 		createContext,
 	})
 );
-
-// app.use("/groups", groupController);
 
 app.get("/files/:uid/*", function (req: Request, res: Response) {
 	if (req.params) {
@@ -58,8 +60,8 @@ io.on("connection", (socket) => {
 			user: user,
 			status: {
 				title: "Idle",
-				data: {}
-			}
+				data: {},
+			},
 		});
 	});
 
@@ -75,29 +77,7 @@ io.on("connection", (socket) => {
 
 		if (!author) return;
 
-		const message = await prisma.message.create({
-			data: {
-				authorId: author.id,
-				groupChatId: data.group.id,
-				content: data.message,
-				mentionedMessageId: data.mention,
-			},
-			include: {
-				author: {
-					select: {
-						username: true,
-						profilePicture: true,
-						name: true,
-						tag: true,
-					},
-				},
-				mentionedMessage: {
-					include: {
-						author: true,
-					},
-				},
-			},
-		});
+		const message = await messageHandler(data, author.id);
 
 		io.to(socket.id).emit("receiveMessage", { ...message, isAuthor: true });
 		socket.to(room).emit("receiveMessage", message);

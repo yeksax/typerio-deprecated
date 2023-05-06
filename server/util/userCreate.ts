@@ -2,8 +2,8 @@ import { prisma } from "../lib/prisma";
 
 interface User {
 	id?: string;
-	name: string;
-	email: string;
+	name?: string;
+	email?: string;
 	image?: string;
 }
 

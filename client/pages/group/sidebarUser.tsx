@@ -109,10 +109,10 @@ export default function SidebarUser({ profile }: UserProps) {
             {data.source == "Spotify" && (
               <div className="flex flex-col gap-4">
                 <h3 className='font-medium flex justify-between items-center text-sm'>
-                  <h3>
+                  <span>
                     Ouvindo no {" "}
                     <span className='font-bold'>Spotify</span>
-                  </h3>
+                  </span>
                   <FontAwesomeIcon className='ml-4 cursor-pointer' size='lg' icon={faSpotify} onClick={() => { setHovering(false) }} />
                 </h3>
                 <Link href={"https://open.spotify.com/track/" + data.id} target='_blank' className="flex gap-2">

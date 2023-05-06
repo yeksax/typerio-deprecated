@@ -1,11 +1,12 @@
 import { socket } from "@/service/socket";
 import { Message, User } from "@/types/interfaces";
-import { faClose, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { faClose, faFile, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState, } from "react";
 import { motion } from "framer-motion";
+import File from "../../components/file";
 
 interface UserProps {
   user: User,
@@ -16,6 +17,13 @@ interface UserProps {
   users: User[]
 }
 
+interface FileData {
+  name: string,
+  size: number
+  id: string,
+  deleted: boolean
+}
+
 export default function MessageInput({ user, setMention, mention, setStatus, defaultStatus, users }: UserProps) {
   const router = useRouter()
   const group = router.query.group
@@ -24,10 +32,12 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
   const idleTimer = useRef<NodeJS.Timeout | null>(null)
 
   const messageRef = useRef<HTMLTextAreaElement>(null)
-  const mentionRef = useRef<HTMLSpanElement>(null)
   const email = session?.user?.email
 
   const [userMentions, setUserMentions] = useState<string[]>([])
+  const [files, setFiles] = useState<ArrayBuffer[]>([])
+
+  const [filesData, setFilesData] = useState<FileData[]>([])
 
   const IDLE_CONSTANT = 1000
 
@@ -58,14 +68,20 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
     const message = messageRef.current.value
 
 
-    if (message === "") {
+    if (message === "" && files.length === 0) {
       setStatus({ title: defaultStatus })
       return
     }
+
     socket.emit('message', {
-      // @ts-ignore
-      message: message,
-      mention: mention?.id,
+      message: {
+        content: message,
+        mention: mention?.id
+      },
+      attachments: {
+        files: files,
+        filesData: filesData,
+      },
       author: { email: email },
       group: { id: group }
     })
@@ -77,6 +93,25 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
     setUserMentions([])
   }
 
+  async function pasteHandler(e: React.ClipboardEvent<HTMLTextAreaElement>) {
+    let newFiles = e.clipboardData.files
+
+    if (newFiles.length) {
+      for (let i = 0; i < newFiles.length; i++) {
+        let file = await newFiles[i].arrayBuffer()
+
+        // console.log(newFiles[i].arrayBuffer().then(r=>console.log(r)))
+        setFiles(prevFiles => [...prevFiles, file])
+        setFilesData(prevFiles => [...prevFiles, {
+          id: newFiles[i].lastModified.toString(),
+          name: newFiles[i].name,
+          size: newFiles[i].size,
+          deleted: false
+        }])
+      }
+    }
+  }
+
   function shortcutHandler(e: any) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
@@ -84,9 +119,14 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
     }
 
     if (e.key == 'Escape') {
-      setMention(null)
+      if (filesData.length > 0) {
+        setFilesData(files => files.map(f => {
+          return files.indexOf(f) != files.length - 1 ? f : { ...f, deleted: true };
+        }))
+      } else {
+        setMention(null)
+      }
     }
-
   }
 
   const highlightMention = [
@@ -107,7 +147,7 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
   }, [mention])
 
   return (
-    <div className="mx-12 border-2 border-black rounded-lg mb-6 px-6 flex flex-col gap-0">
+    <div className="mx-12 border-2 border-black rounded-lg mb-6 px-4 flex flex-col gap-01682985029932.pdf">
       <motion.div
         animate={{
           height: mention ? "60px" : 0
@@ -132,6 +172,25 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
         {mention && <FontAwesomeIcon icon={faClose} className="text-black cursor-pointer" onClick={() => setMention(null)} />}
       </motion.div>
 
+      <motion.div className="flex gap-8 overflow-x-scroll w-full"
+        initial={{
+          height: '0'
+        }}
+
+        animate={{
+          height: filesData.length > 0 ? '2.2rem' : "0",
+          marginTop: filesData.length ? "0.5rem" : "0"
+        }}
+
+        transition={{
+          duration: 0.1,
+        }}
+      >
+        {filesData.map((file, index) => (
+          <File key={file.id} file={file} setFilesData={setFilesData} setFiles={setFiles} index={index} wasDeleted={file.deleted} />
+        ))}
+      </motion.div>
+
       <form
         className="flex gap-2 justify-center items-center"
         onSubmit={messageHandler}
@@ -143,6 +202,7 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
           ref={messageRef}
           placeholder="Type a message..."
           name="message"
+          onPaste={pasteHandler}
         >
         </textarea>
         <button type="submit">

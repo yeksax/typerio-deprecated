@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Separator from "../user/me/verticalSeparator";
+import File from "@/components/file";
 
 interface MessageComponentProps {
   setMention: (mention: Message) => void
@@ -76,12 +77,21 @@ export default function MessageComponent({ message, isFirst, setMention }: Messa
               </div>
             </div>
           )}
+          {message.attachments?.length > 0 && (
+            <div className="flex gap-6 mt-1">
+              {message.attachments.map((attachment) => (
+                <File downloadable file={attachment} key={attachment.id} />
+              ))}
+            </div>
+          )}
+
           <p className="break-all">
             {message.content}
             <span className="text-xs text-gray-400 float-right mt-1 ml-2">
               {time}
             </span>
           </p>
+
 
         </div>
       </motion.div>

@@ -1,12 +1,11 @@
-import path from "path";
-import fs from "fs";
-
 import { prisma } from "../lib/prisma";
 import { removeAccents } from "./_stringCleaning";
+import path = require("path");
+import fs = require("fs");
 
 export async function updateUser(
-	id: string,
-	data: { name: string; tag: string }
+	id?: string,
+	data?: { name?: string; tag?: string }
 ) {
 	const username = `${removeAccents(data.name)
 		.toLowerCase()
@@ -35,8 +34,7 @@ export async function updateUserAvatar({ id, avatar }: SetAvatarArgs) {
 
 	fs.mkdir(`${process.cwd()}/files/users/${id}`, (e) => {});
 
-	await fs.writeFile(filePath, file, { encoding: "base64" }, (e) => {
-  });
+	await fs.writeFile(filePath, file, { encoding: "base64" }, (e) => {});
 
 	const user = await prisma.user.update({
 		where: {

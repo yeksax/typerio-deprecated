@@ -3,10 +3,14 @@ import { appendGroupToUser } from "./userJoinGroup";
 import { removeAccents, removeBadCharacteres, removeEmojis } from "./_stringCleaning";
 import axios from "axios";
 
+import path = require("path");
+import fs = require("fs");
+
+
 interface CreateGroupBody {
-	owner: string;
-	name: string;
-	description: string;
+	owner?: string;
+	name?: string;
+	description?: string;
 }
 
 export async function createGroup(body: CreateGroupBody) {
