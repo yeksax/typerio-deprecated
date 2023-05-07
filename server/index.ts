@@ -56,6 +56,7 @@ io.on("connection", (socket) => {
 	socket.on("join", ({ group, user }: { group: string; user: string }) => {
 		room = group;
 		socket.join(room);
+		socket.to(room).emit("join", user);
 		socket.to(room).emit("status", {
 			user: user,
 			status: {

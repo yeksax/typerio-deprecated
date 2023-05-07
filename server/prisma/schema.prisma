@@ -24,9 +24,6 @@ model User {
   groupChats  Group[]
   ownedGroups Group[]   @relation("OwnedGroups")
 
-  preferences   Json?
-  preferencesId Int?  @unique
-
   directMessages DirectMessage[]
 
   following  User[] @relation("Friends")

@@ -1,5 +1,5 @@
 import { getSession, useSession } from "next-auth/react";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import Sidebar from "./sidebar";
 import MessagesContainer from "./messagesContainer";
 import MessageInput from "./messageInput";
@@ -26,10 +26,10 @@ let groupName = ""
 
 export default function GroupPage({ user, usersFromDB, groupData, messagesFromDB }: Props) {
   const [messages, setMessages] = useState<Message[]>(messagesFromDB)
-  const [users, setUsers] = useState<User[]>(usersFromDB)
   const [mention, setMention] = useState<Message | null>(null)
   const [status, setStatus] = useState<{ title: string, data?: object }>({ title: "Idle" })
   const [spotifyStatus, setSpotifyStatus] = useState<{ title: string, data?: {} }>({ title: "Idle" })
+  let users = useRef<User[]>(usersFromDB)
 
   const { data: session } = useSession()
 
@@ -58,11 +58,27 @@ export default function GroupPage({ user, usersFromDB, groupData, messagesFromDB
   }
 
   function updateStatus(status: { user: string, status: { title: string, data: {} } }) {
-    let userIndex = users.findIndex(user => user.username === status.user)
-    let usersClone = [...users]
-    usersClone[userIndex].status = { ...status.status, data: { ...status.status.data } }
+    console.log(users)
+    let userIndex = users.current.findIndex(user => user.username === status.user)
+    if (userIndex != -1) {
+      let usersClone = [...users.current]
+      usersClone[userIndex].status = { ...status.status, data: { ...status.status.data } }
 
-    setUsers(usersClone)
+      users.current = usersClone
+    }
+  }
+
+  async function newUserHandler(user: string) {
+    let userExist = users.current.filter(u => u.username == user).length > 0
+    let usersClone = [...users.current]
+
+    if (!userExist) {
+      let newUser: any = await clientTRPC.user.get.query(user)
+      usersClone.push({ ...newUser, status: { title: "Idle", data: {} } })
+    }
+
+    console.log(usersClone)
+    users.current = (usersClone)
   }
 
   useEffect(() => {
@@ -70,6 +86,8 @@ export default function GroupPage({ user, usersFromDB, groupData, messagesFromDB
 
     socket.off('receiveMessage', newMessageHandler)
     socket.on('receiveMessage', newMessageHandler)
+    socket.off('join', newUserHandler)
+    socket.on('join', newUserHandler)
     socket.off('status', updateStatus)
     socket.on('status', updateStatus)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -138,11 +156,11 @@ export default function GroupPage({ user, usersFromDB, groupData, messagesFromDB
     <Head>
       <title>{groupData.name}</title>
     </Head>
-    <Sidebar users={users} group={groupData} />
+    <Sidebar users={users.current} group={groupData} />
     <div className="flex flex-col justify-between flex-1">
-      <GroupHeader group={groupData} typingUsers={users.filter(user => user.status?.title == "digitando...").map(user => user.name)} />
+      <GroupHeader group={groupData} typingUsers={users.current.filter(user => user.status?.title == "digitando...").map(user => user.name)} />
       <MessagesContainer messages={groupMessages(messages)} setMention={setMention} />
-      <MessageInput setStatus={setStatus} users={users} defaultStatus={spotifyStatus ? spotifyStatus.title : "Idle"} user={user} mention={mention} setMention={setMention} />
+      <MessageInput setStatus={setStatus} users={users.current} defaultStatus={spotifyStatus ? spotifyStatus.title : "Idle"} user={user} mention={mention} setMention={setMention} />
     </div>
   </section>
 }
@@ -151,9 +169,7 @@ export default function GroupPage({ user, usersFromDB, groupData, messagesFromDB
 export const getServerSideProps: GetServerSideProps<Props> = async function getServerSideProps(context: GetServerSidePropsContext) {
   // Fetch data from external API
   const session = await getSession(context)
-
   const group = context.query.group as string
-
   const groupData = await clientTRPC.groups.getGroup.query(group)
 
   const usersFromDB = await clientTRPC.groups.getMembers.query({
