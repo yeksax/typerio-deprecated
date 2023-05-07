@@ -1,13 +1,14 @@
-import { useEffect, useRef, useState } from "react"
+import { ReactNode, useEffect, useRef, useState } from "react"
 import MessageGroup from "./messageGroup"
 import { Message } from "@/types/interfaces"
 
 interface Props {
   messages: Message[][]
   setMention: (mention: Message) => void
+  children?: ReactNode
 }
 
-export default function MessagesContainer({ messages, setMention }: Props) {
+export default function MessagesContainer({ messages, setMention, children }: Props) {
   const messagesContainer = useRef(null)
 
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function MessagesContainer({ messages, setMention }: Props) {
   return (
     <main className="flex-1 relative py-4 px-12 flex flex-col gap-6 overflow-y-scroll scroll-smooth scroll" ref={messagesContainer}>
       {messages.map((messageGroup, i) => <MessageGroup setMention={setMention} key={i} messages={messageGroup} />)}
+      {children}
     </main>
   )
 }

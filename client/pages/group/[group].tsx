@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { getSession, useSession } from "next-auth/react";
 import { use, useEffect, useRef, useState } from "react";
 import Sidebar from "./sidebar";
@@ -9,11 +10,13 @@ import { socket } from "@/service/socket";
 
 import { GetServerSideProps, GetServerSidePropsContext } from "next/types";
 import { clientTRPC } from "@/service/trpc";
-import { Group, Message, User } from "@/types/interfaces";
+import { Group, Message, User, WaitingMessageProps } from "@/types/interfaces";
 import axios from "axios";
 import { getCookie } from "cookies-next";
 import { getCurrentlyPlaying } from "@/service/spotify";
 import GroupHeader from "./groupHeader";
+import MessageComponent from "./message";
+import WaitingMessage from "./waitingMessage";
 
 interface Props {
   user: User,
@@ -29,6 +32,7 @@ export default function GroupPage({ user, usersFromDB, groupData, messagesFromDB
   const [mention, setMention] = useState<Message | null>(null)
   const [status, setStatus] = useState<{ title: string, data?: object }>({ title: "Idle" })
   const [spotifyStatus, setSpotifyStatus] = useState<{ title: string, data?: {} }>({ title: "Idle" })
+  const [messageOnWait, setMessageOnWait] = useState<WaitingMessageProps | null>(null)
   let users = useRef<User[]>(usersFromDB)
 
   const { data: session } = useSession()
@@ -58,7 +62,6 @@ export default function GroupPage({ user, usersFromDB, groupData, messagesFromDB
   }
 
   function updateStatus(status: { user: string, status: { title: string, data: {} } }) {
-    console.log(users)
     let userIndex = users.current.findIndex(user => user.username === status.user)
     if (userIndex != -1) {
       let usersClone = [...users.current]
@@ -77,8 +80,11 @@ export default function GroupPage({ user, usersFromDB, groupData, messagesFromDB
       usersClone.push({ ...newUser, status: { title: "Idle", data: {} } })
     }
 
-    console.log(usersClone)
     users.current = (usersClone)
+  }
+
+  async function messageSent() {
+    setMessageOnWait(null)
   }
 
   useEffect(() => {
@@ -86,6 +92,8 @@ export default function GroupPage({ user, usersFromDB, groupData, messagesFromDB
 
     socket.off('receiveMessage', newMessageHandler)
     socket.on('receiveMessage', newMessageHandler)
+    socket.off('messageSent', messageSent)
+    socket.on('messageSent', messageSent)
     socket.off('join', newUserHandler)
     socket.on('join', newUserHandler)
     socket.off('status', updateStatus)
@@ -159,8 +167,11 @@ export default function GroupPage({ user, usersFromDB, groupData, messagesFromDB
     <Sidebar users={users.current} group={groupData} />
     <div className="flex flex-col justify-between flex-1">
       <GroupHeader group={groupData} typingUsers={users.current.filter(user => user.status?.title == "digitando...").map(user => user.name)} />
-      <MessagesContainer messages={groupMessages(messages)} setMention={setMention} />
-      <MessageInput setStatus={setStatus} users={users.current} defaultStatus={spotifyStatus ? spotifyStatus.title : "Idle"} user={user} mention={mention} setMention={setMention} />
+      <MessagesContainer messages={groupMessages(messages)} setMention={setMention} >
+        {messageOnWait && <WaitingMessage message={messageOnWait} />}
+      </MessagesContainer>
+
+      <MessageInput setStatus={setStatus} setMessageOnWait={setMessageOnWait} users={users.current} defaultStatus={spotifyStatus ? spotifyStatus.title : "Idle"} user={user} mention={mention} setMention={setMention} />
     </div>
   </section>
 }

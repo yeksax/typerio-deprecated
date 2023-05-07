@@ -7,7 +7,7 @@ import Separator from "../user/me/verticalSeparator";
 import File from "@/components/file";
 
 interface MessageComponentProps {
-  setMention: (mention: Message) => void
+  setMention?: (mention: Message) => void
   message: Message,
   isFirst: boolean
 }
@@ -24,7 +24,7 @@ export default function MessageComponent({ message, isFirst, setMention }: Messa
 
   function mentionMessage(e: any) {
     e.preventDefault()
-    setMention(message)
+    setMention!(message)
   }
 
   const highlightMention = [
@@ -78,9 +78,9 @@ export default function MessageComponent({ message, isFirst, setMention }: Messa
             </div>
           )}
           {message.attachments?.length > 0 && (
-            <div className="flex gap-6 mt-1">
-              {message.attachments.map((attachment) => (
-                <File downloadable file={attachment} key={attachment.id} />
+            <div className={`grid gap-2 mt-1 grid-flow-row ${message.attachments.length > 4 ? 'grid-cols-3' : message.attachments.length > 1 ? 'grid-cols-2' : ''}`}>
+              {message.attachments.map((attachment, index) => (
+                <File length={message.attachments.length} index={index} downloadable file={attachment} key={attachment.id} wasDeleted={false} />
               ))}
             </div>
           )}

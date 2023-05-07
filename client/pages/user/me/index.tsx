@@ -33,8 +33,6 @@ export default function Page({ user }: ProfileProps) {
     let file = event.target.files[0]
     let reader = new FileReader()
 
-    console.log(file)
-
     reader.onload = function (e) {
       setAvatar(e.target?.result as string)
     };
@@ -75,10 +73,7 @@ export default function Page({ user }: ProfileProps) {
         name: data.user.value as string,
         tag: data.tag.value.padStart(4, "0") as string
       }
-    }).then(r => (
-      console.log(r))
-    )
-
+    })
 
     setEditing(false)
   }
@@ -140,8 +135,8 @@ export default function Page({ user }: ProfileProps) {
       <TextSplitter text="Conexões" className="font-bold text-2xl mt-32 mb-8" />
 
       <div className="grid grid-cols-2 gap-x-8">
-            <Connection provider="Spotify" providerCookie="spotify_access_token" icon={faSpotify} url="/api/spotify/connect">
-            </Connection>
+        <Connection provider="Spotify" providerCookie="spotify_access_token" icon={faSpotify} url="/api/spotify/connect">
+        </Connection>
       </div>
 
     </div >

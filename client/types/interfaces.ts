@@ -27,6 +27,16 @@ export interface User extends user {
 	status?: { title: string; data?: any };
 }
 
-export interface File extends file {
+export interface File extends file {}
 
+export interface WaitingMessageProps {
+	content: string;
+	attachments: FileData[];
+}
+
+interface FileData {
+  name: string,
+  size: number
+  id: string,
+  deleted: boolean
 }

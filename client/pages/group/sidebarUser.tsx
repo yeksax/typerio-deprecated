@@ -68,7 +68,7 @@ export default function SidebarUser({ profile }: UserProps) {
       </Link>
       {data && Object.keys(data).length > 0 && (
         <motion.div
-          className='fixed p-2 border-2 border-black rounded-md bg-white'
+          className='fixed p-2 border-2 border-black rounded-md bg-white z-50'
           onMouseOver={() => { setHovering(true); setShouldMove(false) }}
           onMouseLeave={() => setHovering(false)}
           initial={{

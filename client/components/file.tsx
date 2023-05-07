@@ -1,6 +1,7 @@
 import { IconDefinition, faArrowsDownToLine, faC, faClose, faDownLong, faDownload, faFile, faFileArrowDown } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
@@ -17,15 +18,15 @@ interface FileProps {
   setFiles?: any
   setFilesData?: any
   index?: number
+  length?: number
   wasDeleted: boolean
 }
 
-export default function File({ file, setFiles, setFilesData, index, downloadable, wasDeleted }: FileProps) {
+export default function File({ file, setFiles, setFilesData, index, length, downloadable, wasDeleted }: FileProps) {
   const [hovering, setHovering] = useState<boolean>(false)
   const [deleted, setDeleted] = useState<boolean>(wasDeleted)
   let icon = hovering ? faClose : faFile
-
-  if(!downloadable) console.log(wasDeleted)
+  let isImage = ["jpg", "jpeg", "png", "gif"].includes(file.name.split(".").pop()!)
 
   function removeFile() {
     setFiles((files: File[]) => {
@@ -75,14 +76,14 @@ export default function File({ file, setFiles, setFilesData, index, downloadable
     a.click();
     a.remove();
   }
-  
+
   function downloadResource(url: string, filename: string) {
     fetch(url, {
-        headers: new Headers({
-          'Origin': location.origin
-        }),
-        mode: 'cors'
-      })
+      headers: new Headers({
+        'Origin': location.origin
+      }),
+      mode: 'cors'
+    })
       .then(response => response.blob())
       .then(blob => {
         let blobUrl = window.URL.createObjectURL(blob);
@@ -90,41 +91,52 @@ export default function File({ file, setFiles, setFilesData, index, downloadable
       })
       .catch(e => console.error(e));
   }
-  
+
 
   return (
-    <motion.span
-      className="text-sm flex gap-4 items-center border-l-2 border-gray-500 pl-1.5"
-      onHoverStart={() => setHovering(true)}
-      onHoverEnd={() => setHovering(false)}
-      animate={{
-        scale: deleted || wasDeleted ? 0 : 1,
-        width: deleted || wasDeleted ? '0' : 'fit-content'
-      }}
+    isImage && downloadable ?
+      <motion.div className={`w-full ${index == length! - 1 ? 'col-span-' + (length! < 4 ? length! - 1 % 2 : length! % 3) : ""}`}>
+        <Image src={file.url!} alt={file.name} width={256} height={256}
+          className={`rounded-lg w-full object-cover`}
+          style={{
+            minWidth: 200,
+            height: 200
+          }}
+        />
+      </motion.div>
+      :
 
-      onAnimationComplete={() => {
-        if (deleted || wasDeleted) {
-          removeFile()
-        }
-      }}
+      <motion.span
+        className="text-sm mr-8 flex gap-4 items-center border-l-2 border-gray-500 pl-1.5"
+        onHoverStart={() => setHovering(true)}
+        onHoverEnd={() => setHovering(false)}
+        animate={{
+          scale: deleted || wasDeleted ? 0 : 1,
+          width: deleted || wasDeleted ? '0' : 'fit-content'
+        }}
+        onClick={() => {
+          if (downloadable) downloadResource(file.url!, file.name)
+        }}
 
-      transition={{
-        duration: 0.3
-      }}
-    >
-      {downloadable ? (
-        <button onClick={()=>{
-          downloadResource(file.url!, file.name)
-        }}>
-           <FontAwesomeIcon size="lg" icon={icon} onClick={handleIconClick} className="cursor-pointer" />
-        </button>
-      ) : (
-        <FontAwesomeIcon size="lg" icon={icon} onClick={handleIconClick} className="cursor-pointer" />
-      )}
-      <div className="flex flex-col cursor-pointer">
-        <span className="font-medium truncate">{filenameFormatter(file.name)}</span>
-        <span className="text-xs font-regular">{formatBytes(file.size)}</span>
-      </div>
-    </motion.span>
+        onAnimationComplete={() => {
+          if (deleted || wasDeleted) {
+            removeFile()
+          }
+        }}
+
+        transition={{
+          duration: 0.3
+        }}
+      >
+        {downloadable ? (
+          <FontAwesomeIcon size="lg" icon={icon} onClick={handleIconClick} className="cursor-pointer" />
+        ) : (
+          <FontAwesomeIcon size="lg" icon={icon} onClick={handleIconClick} className="cursor-pointer" />
+        )}
+        <div className="flex flex-col cursor-pointer">
+          <span className="font-medium truncate">{filenameFormatter(file.name)}</span>
+          <span className="text-xs font-regular">{formatBytes(file.size)}</span>
+        </div>
+      </motion.span>
   )
 }

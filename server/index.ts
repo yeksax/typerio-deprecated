@@ -78,7 +78,8 @@ io.on("connection", (socket) => {
 
 		if (!author) return;
 
-		const message = await messageHandler(data, author.id);
+		const message = await messageHandler(data, author.id, socket);
+		socket.emit("messageSent")
 
 		io.to(socket.id).emit("receiveMessage", { ...message, isAuthor: true });
 		socket.to(room).emit("receiveMessage", message);

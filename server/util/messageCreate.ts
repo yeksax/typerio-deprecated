@@ -4,6 +4,7 @@ import { prisma } from "../lib/prisma";
 import path = require("path");
 import fs = require("fs");
 import { File } from "buffer";
+import { Socket } from "socket.io";
 
 interface NewMessage {
 	message: {
@@ -22,7 +23,7 @@ interface NewMessage {
 	group: { id: string };
 }
 
-export async function messageHandler(data: NewMessage, author: string) {
+export async function messageHandler(data: NewMessage, author: string, socket: Socket) {
 	let newMessage = await prisma.message.create({
 		data: {
 			authorId: author,

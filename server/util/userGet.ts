@@ -4,14 +4,7 @@ export async function getUser(username: string) {
 	return await prisma.user.findUnique({
 		where: {
 			username: username,
-		},
-		select: {
-			name: true,
-			tag: true,
-			username: true,
-			profilePicture: true,
-			email: true,
-		},
+		}
 	});
 }
 

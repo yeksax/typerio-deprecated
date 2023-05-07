@@ -1,5 +1,5 @@
 import { socket } from "@/service/socket";
-import { Message, User } from "@/types/interfaces";
+import { Message, User, WaitingMessageProps } from "@/types/interfaces";
 import { faClose, faFile, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSession } from "next-auth/react";
@@ -12,6 +12,7 @@ interface UserProps {
   user: User,
   mention: Message | null
   setMention: (mention: Message | null) => void
+  setMessageOnWait: (message: WaitingMessageProps | null) => void
   setStatus: ({ title, data }: { title: string, data?: any }) => void
   defaultStatus: string
   users: User[]
@@ -24,7 +25,7 @@ interface FileData {
   deleted: boolean
 }
 
-export default function MessageInput({ user, setMention, mention, setStatus, defaultStatus, users }: UserProps) {
+export default function MessageInput({ user, setMessageOnWait, setMention, mention, setStatus, defaultStatus, users }: UserProps) {
   const router = useRouter()
   const group = router.query.group
 
@@ -86,11 +87,20 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
       group: { id: group }
     })
 
+    setMessageOnWait({
+      attachments: filesData,
+      content: message,
+    })
+
     // @ts-ignore
     messageRef.current.value = ""
     autoHeight(e)
     setMention(null)
     setUserMentions([])
+    setFilesData([])
+    setFiles([])
+
+    
   }
 
   async function pasteHandler(e: React.ClipboardEvent<HTMLTextAreaElement>) {
@@ -100,7 +110,6 @@ export default function MessageInput({ user, setMention, mention, setStatus, def
       for (let i = 0; i < newFiles.length; i++) {
         let file = await newFiles[i].arrayBuffer()
 
-        // console.log(newFiles[i].arrayBuffer().then(r=>console.log(r)))
         setFiles(prevFiles => [...prevFiles, file])
         setFilesData(prevFiles => [...prevFiles, {
           id: newFiles[i].lastModified.toString(),
